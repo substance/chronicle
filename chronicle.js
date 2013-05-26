@@ -258,7 +258,8 @@ Chronicle.__prototype__ = function() {
 Chronicle.prototype = new Chronicle.__prototype__();
 
 // enables early failing sanity checks
-Chronicle.HYSTERICAL = false;
+// disable this if you need more performance giving up guaranteed integrity.
+Chronicle.HYSTERICAL = true;
 
 Chronicle.create = function(index, versioned) {
   throw new errors.SubstanceError("Not implemented.");
@@ -272,17 +273,27 @@ Chronicle.uuid = function() {
 // ========
 //
 var Index = function() {
-  this.changes = {}
+  this.changes = {};
+  this.children = {};
   this.changes[Chronicle.Index.ROOT_ID] = Chronicle.Index.ROOT;
+  this.children[Chronicle.Index.ROOT_ID] = [];
 };
 
 Index.__prototype__ = function() {
 
   // Adds a change to the index.
   // ----
-  //
+  // All parents must be registered first, otherwise throws an error.
 
   this.add = function(change) {
+    throw new errors.SubstanceError("Not implemented.");
+  }
+
+  // Removes a change from the index
+  // ----
+  // All children must be removed first, otherwise throws an error.
+
+  this.remove = function(id) {
     throw new errors.SubstanceError("Not implemented.");
   }
 
@@ -299,6 +310,14 @@ Index.__prototype__ = function() {
   //
 
   this.get = function(id) {
+    throw new errors.SubstanceError("Not implemented.");
+  }
+
+  // Provides all changes that are direct successors of this change.
+  // ----
+  //
+
+  this.children = function(id) {
     throw new errors.SubstanceError("Not implemented.");
   }
 
