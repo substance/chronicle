@@ -1,6 +1,6 @@
 (function(root) {
 
-if (typeof exports !== 'undefined') {
+if (typeof exports === 'undefined') {
   var util = root.Substance.util;
   var errors = root.Substance.errors;
   var _ = root._;
@@ -26,9 +26,10 @@ errors.MergeError = MergeError;
 var Change = function(options) {
   options = options || {};
   this.id = options.id || util.uuid();
-  this.parents = options.parent || [];
+  this.parents = options.parents || [];
   this.data = options.data || {};
 };
+
 Change.prototype = {
   toJSON: function() {
     return {
@@ -36,8 +37,8 @@ Change.prototype = {
       parents: this.parents,
       data: this.data
     };
-  };
-}
+  }
+};
 
 // A dedicated Change for merging multiple Chronicle histories.
 // ======
@@ -68,14 +69,14 @@ var Merge = function(diff, options) {
 };
 
 Merge.__prototype__ = function() {
-  toJSON: function() {
+  this.toJSON = function() {
     return {
       id: this.id,
       parents: this.parents,
       diff: this.diff
     };
   };
-}
+};
 Merge.__prototype__.prototype = Change.prototype;
 Merge.prototype = new Merge.__prototype__();
 
@@ -162,13 +163,13 @@ Diff.create = function(reverts, applies) {
 // A Chronicle contains the history of a versioned object.
 // ========
 //
-var Chronicle = function(index, versioned) {
+var Chronicle = function(index) {
 
   // an instance implementing the 'Index' interface
   this.index = index;
 
   // the versioned object which must implement the 'Versioned' interface.
-  this.versioned = versioned;
+  this.versioned = null;
 
 };
 
@@ -223,6 +224,14 @@ Chronicle.__prototype__ = function() {
     throw new errors.SubstanceError("Not implemented.");
   };
 
+  // Making this instance the chronicler of the given Versioned instance.
+  // ----
+  //
+
+  this.manage = function(versioned) {
+    this.versioned = versioned;
+  };
+
 };
 
 Chronicle.prototype = new Chronicle.__prototype__();
@@ -230,14 +239,20 @@ Chronicle.prototype = new Chronicle.__prototype__();
 // enables early failing sanity checks
 Chronicle.HYSTERICAL = false;
 
+Chronicle.create = function(index, versioned) {
+  throw new errors.SubstanceError("Not implemented.");
+};
+
+Chronicle.uuid = function() {
+  return util.uuid();
+}
 
 // A directed acyclic graph of Commit instances.
 // ========
 //
 var Index = function() {
-  this.changes = {
-    Index.ROOT.id: Index.ROOT 
-  };
+  this.changes = {}
+  this.changes[Chronicle.Index.ROOT_ID] = Chronicle.Index.ROOT;
 };
 
 Index.__prototype__ = function() {
@@ -289,9 +304,14 @@ Index.__prototype__ = function() {
 
 Index.prototype = new Index.__prototype__();
 
-Index.ROOT = new Chronicle.Change({
-    id: "__ROOT__",
+Index.ROOT_ID = "__ROOT__";
+Index.ROOT = new Change({
+    id: Index.ROOT_ID
 });
+
+Index.create = function() {
+  throw new errors.SubstanceError("Not implemented.");
+};
 
 
 // A interface that must be implemented by objects that should be versioned.
@@ -346,7 +366,7 @@ Chronicle.Diff = Diff;
 Chronicle.Index = Index;
 Chronicle.Versioned = Versioned;
 
-if (typeof exports !== 'undefined') {
+if (typeof exports === 'undefined') {
   root.Substance.Chronicle = Chronicle
 } else {
   module.exports = Chronicle;
