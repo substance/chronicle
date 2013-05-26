@@ -25,7 +25,7 @@ errors.MergeError = MergeError;
 //
 var Change = function(options) {
   options = options || {};
-  this.id = options.id || util.uuid();
+  this.id = options.id || Chronicle.uuid();
   this.parents = options.parents || [];
   this.data = options.data || {};
 };
@@ -37,6 +37,10 @@ Change.prototype = {
       parents: this.parents,
       data: this.data
     };
+  },
+
+  hasParent: function(id) {
+    return this.parents.indexOf(id) >= 0;
   }
 };
 
@@ -114,10 +118,18 @@ Diff.prototype = {
     throw new errors.SubstanceError("Not implemented.");
   },
 
+  hasReverts: function() {
+    throw new errors.SubstanceError("Not implemented.");
+  },
+
   // Provides the changes that will applied
   // ----
 
   applies: function() {
+    throw new errors.SubstanceError("Not implemented.");
+  },
+
+  hasApplies: function() {
     throw new errors.SubstanceError("Not implemented.");
   },
 
@@ -199,6 +211,15 @@ Chronicle.__prototype__ = function() {
   this.reset = function(changeId) {
     throw new errors.SubstanceError("Not implemented.");
   };
+
+  // Apply transitions along the given sequence of changes.
+  // ----
+  //
+  // Note: this method throws an ChangeError if the sequence can not be applied.
+
+  this.apply = function(sha) {
+    throw new errors.SubstanceError("Not implemented.");
+  }
 
   // Imports all commits from another index
   // ----
