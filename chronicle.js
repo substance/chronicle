@@ -106,7 +106,7 @@ Merge.prototype = new Merge.__prototype__();
 var Diff = function() {};
 
 Diff.prototype = {
-  
+
   // Provides the changes that will be reverted
   // ----
 
@@ -116,7 +116,7 @@ Diff.prototype = {
 
   // Provides the changes that will applied
   // ----
-  
+
   applies: function() {
     throw new errors.SubstanceError("Not implemented.");
   },
@@ -130,7 +130,7 @@ Diff.prototype = {
 
   // Provides the version this diff has to be applied on.
   // ----
-  
+
   start: function() {
     throw new errors.SubstanceError("Not implemented.");
   },
@@ -151,10 +151,10 @@ Diff.prototype = {
 
 };
 
-// Creates a new diff for the given reverts and applies 
+// Creates a new diff for the given reverts and applies
 // ----
 // Note this factory is provided when loading index_impl.js
-  
+
 Diff.create = function(reverts, applies) {
   throw new errors.SubstanceError("Not implemented.");
 }
@@ -195,7 +195,7 @@ Chronicle.__prototype__ = function() {
   // of the given change.
   //
   // Note: this corresponds to a 'git reset --hard' in git.
-  
+
   this.reset = function(changeId) {
     throw new errors.SubstanceError("Not implemented.");
   };
@@ -276,7 +276,7 @@ Index.__prototype__ = function() {
   // Retrieves a change by id
   // ----
   //
-  
+
   this.get = function(id) {
     throw new errors.SubstanceError("Not implemented.");
   }
@@ -284,7 +284,7 @@ Index.__prototype__ = function() {
   // Lists the ids of all contained changes
   // ----
   //
-  
+
   this.list = function() {
     throw new errors.SubstanceError("Not implemented.");
   };
@@ -295,7 +295,7 @@ Index.__prototype__ = function() {
   // The computed diff is not necessarily the shortest one.
   // For sake of simplicity, revert sequences follow the first parent (see merge).
   // This may be optimized later.
-  
+
   this.diff = function(start, end) {
     throw new errors.SubstanceError("Not implemented.");
   }
@@ -304,7 +304,7 @@ Index.__prototype__ = function() {
 
 Index.prototype = new Index.__prototype__();
 
-Index.ROOT_ID = "__ROOT__";
+Index.ROOT_ID = "ROOT";
 Index.ROOT = new Change({
     id: Index.ROOT_ID
 });
@@ -342,7 +342,7 @@ Versioned.__prototype__ = function() {
 
   // Stores an updated head
   // -----
-  // this gets called by this.record() after a change has been recorded. 
+  // this gets called by this.record() after a change has been recorded.
 
   this.setHead = function(head) {
     throw new errors.SubstanceError("Not implemented.");
