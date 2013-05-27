@@ -1,11 +1,20 @@
-(function(root) {
+(function(root) { "use_strict";
 
-var Chronicle = root.Substance.Chronicle;
-var util = root.Substance.util;
+// Imports
+// ====
+
+var _, util, Chronicle;
+
+Chronicle = root.Substance.Chronicle;
+util = root.Substance.util;
+_ = root._;
+
+// Module
+// ====
 
 var Computador = function() {
   this.result = 0;
-}
+};
 
 Computador.prototype = {
 
@@ -26,14 +35,14 @@ Computador.prototype = {
 
     this.result /= val;
   }
-}
+};
 
 var VersionedComputador = function(chronicle) {
   Computador.call(this);
 
   this.chronicle = chronicle;
   this.head = Chronicle.Index.ROOT_ID;
-}
+};
 
 VersionedComputador.__prototype__ = function() {
 
@@ -103,10 +112,13 @@ VersionedComputador.__prototype__ = function() {
 VersionedComputador.__prototype__.prototype = Computador.prototype;
 VersionedComputador.prototype = _.extend({}, Chronicle.Versioned.prototype, new VersionedComputador.__prototype__());
 
+// Export
+// ====
+
 var exports = {
   Computador: Computador,
   VersionedComputador: VersionedComputador
-}
+};
 
 if (!root.Substance.test.chronicle) root.Substance.test.chronicle = {};
 _.extend(root.Substance.test.chronicle, exports);

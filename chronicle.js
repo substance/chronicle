@@ -1,16 +1,19 @@
-(function(root) {
+(function(root) { "use_strict";
 
-if (typeof exports === 'undefined') {
-  var util = root.Substance.util;
-  var errors = root.Substance.errors;
-  var _ = root._;
-} else {
+/*jshint unused: false*/ // deactivating this, as we define abstract interfaces here
+
+var util, errors, _;
+
+if (root.exports) {
   throw "Node.js support not implemented";
+} else {
+  util = root.Substance.util;
+  errors = root.Substance.errors;
+  _ = root._;
 }
 
-var ChronicleError = errors.define("ChronicleError", -1);
-
-var ChangeError = errors.define("ChangeError", -1);
+errors.define("ChronicleError", -1);
+errors.define("ChangeError", -1);
 
 var MergeError = function(message, data) {
   errors.SubstanceError.call(this, "MergeError", -1, message);
@@ -168,8 +171,9 @@ Diff.prototype = {
 // Note this factory is provided when loading index_impl.js
 
 Diff.create = function(reverts, applies) {
+  /*jshint unused: false*/
   throw new errors.SubstanceError("Not implemented.");
-}
+};
 
 
 // A Chronicle contains the history of a versioned object.
@@ -219,7 +223,7 @@ Chronicle.__prototype__ = function() {
 
   this.apply = function(sha) {
     throw new errors.SubstanceError("Not implemented.");
-  }
+  };
 
   // Imports all commits from another index
   // ----
@@ -267,7 +271,7 @@ Chronicle.create = function(index, versioned) {
 
 Chronicle.uuid = function() {
   return util.uuid();
-}
+};
 
 // A directed acyclic graph of Commit instances.
 // ========
@@ -287,7 +291,7 @@ Index.__prototype__ = function() {
 
   this.add = function(change) {
     throw new errors.SubstanceError("Not implemented.");
-  }
+  };
 
   // Removes a change from the index
   // ----
@@ -295,7 +299,7 @@ Index.__prototype__ = function() {
 
   this.remove = function(id) {
     throw new errors.SubstanceError("Not implemented.");
-  }
+  };
 
   // Checks if a given changeId has been added to the index.
   // ----
@@ -303,7 +307,7 @@ Index.__prototype__ = function() {
 
   this.contains = function(changeId) {
     throw new errors.SubstanceError("Not implemented.");
-  }
+  };
 
   // Retrieves a change by id
   // ----
@@ -311,7 +315,7 @@ Index.__prototype__ = function() {
 
   this.get = function(id) {
     throw new errors.SubstanceError("Not implemented.");
-  }
+  };
 
   // Provides all changes that are direct successors of this change.
   // ----
@@ -319,7 +323,7 @@ Index.__prototype__ = function() {
 
   this.children = function(id) {
     throw new errors.SubstanceError("Not implemented.");
-  }
+  };
 
   // Lists the ids of all contained changes
   // ----
@@ -338,7 +342,7 @@ Index.__prototype__ = function() {
 
   this.diff = function(start, end) {
     throw new errors.SubstanceError("Not implemented.");
-  }
+  };
 
 };
 
@@ -373,14 +377,14 @@ Versioned.__prototype__ = function() {
   // For reverting a Merge a the id of the parent change has to be given.
   this.revert = function(parentId) {
     throw new errors.SubstanceError("Not implemented.");
-  }
+  };
 
   // Provides the id of the last applied change.
   // ----
   //
   this.getHead = function() {
     return this.head;
-  }
+  };
 
   // Stores an updated head
   // -----
@@ -388,7 +392,7 @@ Versioned.__prototype__ = function() {
 
   this.setHead = function(head) {
     this.head = head;
-  }
+  };
 
   // Resets the versioned object to a clean state.
   // -----
@@ -397,7 +401,7 @@ Versioned.__prototype__ = function() {
 
   this.reset = function() {
     this.head = Index.ROOT_ID;
-  }
+  };
 };
 
 Versioned.prototype = new Versioned.__prototype__();
@@ -409,7 +413,7 @@ Chronicle.Index = Index;
 Chronicle.Versioned = Versioned;
 
 if (typeof exports === 'undefined') {
-  root.Substance.Chronicle = Chronicle
+  root.Substance.Chronicle = Chronicle;
 } else {
   module.exports = Chronicle;
 }
