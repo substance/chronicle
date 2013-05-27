@@ -205,23 +205,25 @@ Chronicle.__prototype__ = function() {
     throw new errors.SubstanceError("Not implemented.");
   };
 
-  // Reset to a specific version.
+  // Opens a specific version.
   // ----
-  // Brings the versioned object as well as the index to the state
-  // of the given change.
   //
-  // Note: this corresponds to a 'git reset --hard' in git.
+  // Brings the versioned object as well as the index to the state
+  // of the given state.
+  //
 
-  this.reset = function(changeId) {
+  this.open = function(state) {
     throw new errors.SubstanceError("Not implemented.");
   };
 
-  // Apply transitions along the given sequence of changes.
+  // Performs an incremental transformation described by a sequence of states.
   // ----
+  // The states must be direct neighbors.
   //
-  // Note: this method throws an ChangeError if the sequence can not be applied.
+  // Call this if you already know path between two states
+  // or if you want to apply or revert a single change.
 
-  this.apply = function(sha) {
+  this.step = function(next) {
     throw new errors.SubstanceError("Not implemented.");
   };
 
@@ -245,7 +247,7 @@ Chronicle.__prototype__ = function() {
   //
   // throws a MergeError if the merge can not be applied.
 
-  this.merge = function(sha, strategy, sequence) {
+  this.merge = function(state, strategy, sequence) {
     throw new errors.SubstanceError("Not implemented.");
   };
 
@@ -352,55 +354,60 @@ Index.ROOT_ID = "ROOT";
 Index.ROOT = new Change({
     id: Index.ROOT_ID
 });
+Index.INVALID = "INVALID";
 
 Index.create = function() {
   throw new errors.SubstanceError("Not implemented.");
 };
 
-
 // A interface that must be implemented by objects that should be versioned.
-var Versioned = function() {
-  this.head = Chronicle.Index.ROOT_ID;
+var Versioned = function(chronicle) {
+  this.chronicle = chronicle;
+  this.state = Chronicle.Index.ROOT_ID;
+  chronicle.manage(this);
 };
 
 Versioned.__prototype__ = function() {
 
-  // Applies a change.
+  // Applies the given change.
   // -----
-  // throws a ChangeError if the commit could not be applied
+  //
+
   this.apply = function(change) {
     throw new errors.SubstanceError("Not implemented.");
   };
 
-  // Reverts the last applied change
+  // Reverts the given change.
   // -----
-  // For reverting a Merge a the id of the parent change has to be given.
-  this.revert = function(parentId) {
+  //
+
+  this.revert = function(change) {
     throw new errors.SubstanceError("Not implemented.");
   };
 
-  // Provides the id of the last applied change.
+  // Provides the current state.
   // ----
   //
-  this.getHead = function() {
-    return this.head;
+
+  this.getState = function() {
+    return this.state;
   };
 
-  // Stores an updated head
-  // -----
-  // this gets called by this.record() after a change has been recorded.
+  // Sets the state.
+  // ----
+  //
+  // Note: this is necessary for implementing merges.
 
-  this.setHead = function(head) {
-    this.head = head;
+  this.setState = function(state) {
+    this.state = state;
   };
 
   // Resets the versioned object to a clean state.
   // -----
-  // This is only used as a last-resort when incremental applications fail
-  // to reach a state by applying from scratch.
+  //
 
   this.reset = function() {
-    this.head = Index.ROOT_ID;
+    this.state = Index.ROOT_ID;
   };
 };
 

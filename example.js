@@ -39,9 +39,7 @@ Computador.prototype = {
 
 var VersionedComputador = function(chronicle) {
   Computador.call(this);
-
-  this.chronicle = chronicle;
-  this.head = Chronicle.Index.ROOT_ID;
+  Chronicle.Versioned.call(this, chronicle);
 };
 
 VersionedComputador.__prototype__ = function() {
@@ -94,23 +92,16 @@ VersionedComputador.__prototype__ = function() {
     else inverse[change.op].call(this, change.val);
   };
 
-  this.getHead = function() {
-    return this.head;
-  };
-
-  this.setHead = function(head) {
-    this.head = head;
-  };
 
   this.reset = function() {
-    this.head = Chronicle.Index.ROOT_ID;
+    __super__.reset.call(this);
     this.result = 0;
   };
 
 };
 
-VersionedComputador.__prototype__.prototype = Computador.prototype;
-VersionedComputador.prototype = _.extend({}, Chronicle.Versioned.prototype, new VersionedComputador.__prototype__());
+VersionedComputador.__prototype__.prototype = _.extend({}, Computador.prototype, Chronicle.Versioned.prototype);
+VersionedComputador.prototype = new VersionedComputador.__prototype__();
 
 // Export
 // ====
