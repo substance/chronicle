@@ -355,7 +355,9 @@ Index.create = function() {
 
 
 // A interface that must be implemented by objects that should be versioned.
-var Versioned = function() {};
+var Versioned = function() {
+  this.head = Chronicle.Index.ROOT_ID;
+};
 
 Versioned.__prototype__ = function() {
 
@@ -377,7 +379,7 @@ Versioned.__prototype__ = function() {
   // ----
   //
   this.getHead = function() {
-    throw new errors.SubstanceError("Not implemented.");
+    return this.head;
   }
 
   // Stores an updated head
@@ -385,7 +387,7 @@ Versioned.__prototype__ = function() {
   // this gets called by this.record() after a change has been recorded.
 
   this.setHead = function(head) {
-    throw new errors.SubstanceError("Not implemented.");
+    this.head = head;
   }
 
   // Resets the versioned object to a clean state.
@@ -394,7 +396,7 @@ Versioned.__prototype__ = function() {
   // to reach a state by applying from scratch.
 
   this.reset = function() {
-    throw new errors.SubstanceError("Not implemented.");
+    this.head = Index.ROOT_ID;
   }
 };
 
