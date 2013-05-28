@@ -69,10 +69,19 @@ Change.prototype = {
 //    }
 //
 
-var Merge = function(diff, options) {
+var Merge = function(main, diff, options) {
   Change.call(this, options);
-  this.parents = _.keys(diff);
+
+  // the parent that has been selected
+  // Note: diff[main] contains only applies
+  this.main = main;
+
+  // a map containing Diff instances for each of the parents
+  // When the merge will be applied, these diffs specify how to reach
+  // the following state
   this.diff = diff;
+
+  this.parents = _.keys(diff);
 };
 
 Merge.__prototype__ = function() {
@@ -212,7 +221,7 @@ Chronicle.__prototype__ = function() {
   // of the given state.
   //
 
-  this.open = function(state) {
+  this.open = function(version) {
     throw new errors.SubstanceError("Not implemented.");
   };
 
@@ -245,7 +254,7 @@ Chronicle.__prototype__ = function() {
   //  'theirs': reject the changes of this branch
   //  'manual': compute a merge that leads to the given sequence.
   //
-  // throws a MergeError if the merge can not be applied.
+  // returns the id of the new state
 
   this.merge = function(state, strategy, sequence) {
     throw new errors.SubstanceError("Not implemented.");
@@ -383,6 +392,27 @@ Versioned.__prototype__ = function() {
 
   this.revert = function(change) {
     throw new errors.SubstanceError("Not implemented.");
+  };
+
+  // Swaps two changes.
+  // ----
+  //
+  // Some systems can not change the order of changes directly but need to
+  // transform the changes so that they can be applied in swapped order.
+  //
+  // The implementation must make sure that the following holds:
+  //
+  // Consider a sequence of (valid) changes:
+  //    A - B - C
+  //
+  // Calling `swapped(B, C);` should return a tuple `[C', B']`
+  // which can be applied to A, so that
+  //    A - C' - B'
+  // is again a valid sequence and  B' and B / C and C' are semantically equivalent.
+
+  this.swapped = function(first, second) {
+    // the trivial implementation
+    return [second, first];
   };
 
   // Provides the current state.
