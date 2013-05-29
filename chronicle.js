@@ -262,6 +262,37 @@ Chronicle.__prototype__ = function() {
     throw new errors.SubstanceError("Not implemented.");
   };
 
+  this.forward = function(toward) {
+    var state = this.versioned.getState();
+    if (state === toward) return;
+
+    var children = this.index.children[state];
+    if (children.length === 0) return;
+    if (children.length === 1) this.step(children[0]);
+
+    if (toward) {
+      var path = this.index.shortestPath(state, toward);
+      path.shift();
+      var next = path.shift();
+      if (next) this.step(next);
+    } else {
+      throw new errors.ChronicleError("Hit branching joint: do not know which way to forward");
+    }
+  }
+
+  this.rewind = function() {
+    var current = this.index.get(this.versioned.getState());
+    var previous;
+    if (current.id === Chronicle.Index.ROOT_ID) return;
+
+    if (current instanceof Merge) {
+      previous = current.merge;
+    } else {
+      previous = current.parents[0];
+    }
+    this.step(previous);
+  }
+
   // Imports all commits from another index
   // --------
   //
@@ -297,6 +328,43 @@ Chronicle.__prototype__ = function() {
     this.versioned = versioned;
   };
 
+  // Marks the current version.
+  // --------
+  //
+
+  this.mark = function(name) {
+    this.index.setRef(name, this.versioned.getState());
+  }
+
+  // Provides the id of a previously marked version.
+  // --------
+  //
+
+  this.find = function(name) {
+    this.index.getRef(name);
+  };
+
+  // Get the current version.
+  // --------
+  //
+
+  this.getState = function() {
+    return this.versioned.getState();
+  };
+
+  // Retrieve changes.
+  // --------
+  //
+  // If no range is given a full path is returned.
+
+  this.getChanges = function(start, end) {
+    var changes = [];
+    var path = this.path(start, end);
+
+    _.each(path, function(id) {
+      changes.push(this.index.get(id));
+    }, this);
+  }
 };
 
 Chronicle.prototype = new Chronicle.__prototype__();
@@ -305,7 +373,7 @@ Chronicle.prototype = new Chronicle.__prototype__();
 // disable this if you need more performance giving up guaranteed integrity.
 Chronicle.HYSTERICAL = true;
 
-Chronicle.create = function(index, versioned) {
+Chronicle.create = function(index) {
   throw new errors.SubstanceError("Not implemented.");
 };
 
@@ -318,6 +386,7 @@ Chronicle.uuid = function() {
 //
 var Index = function() {
   this.changes = {};
+  this.refs = {};
   this.children = {};
   this.changes[Chronicle.Index.ROOT_ID] = Chronicle.Index.ROOT;
   this.children[Chronicle.Index.ROOT_ID] = [];
@@ -354,8 +423,9 @@ Index.__prototype__ = function() {
   // Retrieves a (shortest) path between two versions
   // --------
   //
-  // If only one id is given it returns the path version starting
-  // from ROOT.
+  // If no end change is given it returns the path starting
+  // from ROOT to the start change.
+  // path() returns the path from ROOT to the current state.
   //
 
   this.path = function(start, end) {
@@ -396,6 +466,22 @@ Index.__prototype__ = function() {
   this.diff = function(start, end) {
     throw new errors.SubstanceError("Not implemented.");
   };
+
+  // Sets a reference to look up a change via name.
+  // ---------
+  //
+
+  this.setRef = function(name, id) {
+    this.refs[name] = id;
+  }
+
+  // Looks-up a change via name.
+  // ---------
+  //
+
+  this.getRef = function(name) {
+    return this.refs[name];
+  }
 
 };
 
