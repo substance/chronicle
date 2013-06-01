@@ -111,7 +111,7 @@ var Merge = function(main, branches, options) {
 Merge.__prototype__ = function() {
 
   var __super__ = util.prototype(this);
-  
+
   this.toJSON = function() {
     var result = __super__.toJSON.call(this);
     result.type = Merge.TYPE;
@@ -143,7 +143,7 @@ var Transformed = function(parent, data, original, options) {
 Transformed.__prototype__ = function() {
 
   var __super__ = util.prototype(this);
-  
+
   this.toJSON = function() {
     var result = __super__.toJSON.call(this);
     result.type = Transformed.TYPE;
@@ -191,6 +191,10 @@ var Diff = function() {};
 
 Diff.prototype = {
 
+  hasReverts: function() {
+    throw new errors.SubstanceError("Not implemented.");
+  },
+
   // Provides the changes that will be reverted
   // --------
 
@@ -198,7 +202,7 @@ Diff.prototype = {
     throw new errors.SubstanceError("Not implemented.");
   },
 
-  hasReverts: function() {
+  hasApplies: function() {
     throw new errors.SubstanceError("Not implemented.");
   },
 
@@ -209,14 +213,37 @@ Diff.prototype = {
     throw new errors.SubstanceError("Not implemented.");
   },
 
-  hasApplies: function() {
-    throw new errors.SubstanceError("Not implemented.");
-  },
-
   // Provides the sequence of states visited by this diff.
   // --------
 
   sequence: function() {
+    throw new errors.SubstanceError("Not implemented.");
+  },
+
+  // Provides the path from the root to the first change
+  // --------
+  //
+  // The naming refers to a typical diff situation where
+  // two branches are compared. The first branch containing the own
+  // changes, the second one the others.
+
+  mine: function() {
+    throw new errors.SubstanceError("Not implemented.");
+  },
+
+  // Provides the path from the root to the second change
+  // --------
+  //
+
+  theirs: function() {
+    throw new errors.SubstanceError("Not implemented.");
+  },
+
+  // Provides the common root of the compared branches.
+  // --------
+  //
+
+  root: function() {
     throw new errors.SubstanceError("Not implemented.");
   },
 
@@ -462,6 +489,14 @@ Index.__prototype__ = function() {
     throw new errors.SubstanceError("Not implemented.");
   };
 
+  // Connects a node to a new parent
+  // --------
+  //
+
+  this.reconnect = function(child, parent) {
+    throw new errors.SubstanceError("Not implemented.");
+  };
+
   // Retrieves a (shortest) path between two versions
   // --------
   //
@@ -583,8 +618,8 @@ Versioned.__prototype__ = function() {
   // I.e., the result of applying `a - b'` must lead to the same result as
   // applying `b - a'`.
   //
-  // > From a GIT point of view this related to rebasing. 
-    
+  // > From a GIT point of view this related to rebasing.
+
   this.transform = function(first, second) {
     throw new errors.SubstanceError("Not implemented.");
   };
@@ -620,6 +655,7 @@ Versioned.prototype = new Versioned.__prototype__();
 
 Chronicle.Change = Change;
 Chronicle.Merge = Merge;
+Chronicle.Transformed = Transformed;
 Chronicle.Diff = Diff;
 Chronicle.Index = Index;
 Chronicle.Versioned = Versioned;
