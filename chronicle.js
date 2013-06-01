@@ -36,13 +36,11 @@ var Change = function(parent, data, options) {
 
   this.id = options.id || Chronicle.uuid();
 
-  // An array of ids of versions that this change is derived from
-  // --------
-  // Usually contains only one entry. Only Merge nodes have multiple parents.
   if (!parent) {
     throw new errors.ChangeError("Every change needs a parent.");
   }
-  this.parents = [parent];
+
+  this.parent = parent;
 
   // Application specific data
   // --------
@@ -54,18 +52,29 @@ var Change = function(parent, data, options) {
 };
 
 Change.prototype = {
+
   toJSON: function() {
     return {
       id: this.id,
-      parents: this.parents,
+      parent: this.parent,
       data: this.data
     };
-  },
-
-  hasParent: function(id) {
-    return this.parents.indexOf(id) >= 0;
   }
+
 };
+
+Change.fromJSON = function(json) {
+  if (json.type === Merge.TYPE) return new Merge(json);
+  if (json.type === Transformed.TYPE) return new Transformed(json);
+
+  return new Change(json.parent, json.data, json);
+};
+
+// a dedicated global root node
+var ROOT = new Change(true, null, {
+  id: "ROOT"
+});
+ROOT.parent = ROOT.id;
 
 // A dedicated Change for merging multiple Chronicle histories.
 // ========
@@ -90,32 +99,70 @@ Change.prototype = {
 //    }
 //
 
-var Merge = function(main, diff) {
-  Change.call(this, main);
+var Merge = function(main, branches, options) {
+  Change.call(this, main, null, options);
 
-  // the parent that has been selected
-  // Note: diff[main] contains only applies
-  this.main = main;
-
-  // a map containing Diff instances for each of the parents
-  // When the merge will be applied, these diffs specify how to reach
-  // the following state
-  this.diff = diff;
-
-  this.parents = _.keys(diff);
+  if (!branches) {
+    throw new errors.ChangeError("Missing branches.");
+  }
+  this.branches = branches;
 };
 
 Merge.__prototype__ = function() {
+
+  var __super__ = util.prototype(this);
+  
   this.toJSON = function() {
-    return {
-      id: this.id,
-      parents: this.parents,
-      diff: this.diff
-    };
+    var result = __super__.toJSON.call(this);
+    result.type = Merge.TYPE;
+    result.branches = this.branches;
+    return result;
   };
+
 };
 Merge.__prototype__.prototype = Change.prototype;
 Merge.prototype = new Merge.__prototype__();
+
+Merge.TYPE =  "merge";
+
+Merge.fromJSON = function(data) {
+  if (data.type !== Merge.TYPE) throw new errors.ChangeError("Illegal data for deserializing a Merge node.");
+  return new Merge(data.parent, data.branches, data);
+};
+
+// Transformed changes are those which have been
+// created by transforming (rebasing) another existing change.
+// For the time being, the data is persisted redundantly.
+// To be able to track the original source of the change,
+// this type is introduced.
+var Transformed = function(parent, data, original, options) {
+  Change.call(this, parent, data, options);
+  this.original = original;
+};
+
+Transformed.__prototype__ = function() {
+
+  var __super__ = util.prototype(this);
+  
+  this.toJSON = function() {
+    var result = __super__.toJSON.call(this);
+    result.type = Transformed.TYPE;
+    result.original = this.original;
+    return result;
+  };
+
+};
+
+Transformed.TYPE = "transformed";
+
+Transformed.fromJSON = function(json) {
+  if (json.type !== Transformed.TYPE) throw new errors.ChangeError("Illegal data for deserializing a Transformed node.");
+  return new Transformed(json.parent, json.data, json.original, json);
+};
+
+
+Transformed.__prototype__.prototype = Change.prototype;
+Transformed.prototype = new Transformed.__prototype__();
 
 // A class that describes the difference of two states by
 // a sequence of changes (reverts and applies).
@@ -278,20 +325,15 @@ Chronicle.__prototype__ = function() {
     } else {
       throw new errors.ChronicleError("Hit branching joint: do not know which way to forward");
     }
-  }
+  };
 
   this.rewind = function() {
     var current = this.index.get(this.versioned.getState());
     var previous;
-    if (current.id === Chronicle.Index.ROOT_ID) return;
-
-    if (current instanceof Merge) {
-      previous = current.merge;
-    } else {
-      previous = current.parents[0];
-    }
+    if (current.id === ROOT.id) return;
+    previous = current.parent;
     this.step(previous);
-  }
+  };
 
   // Imports all commits from another index
   // --------
@@ -334,7 +376,7 @@ Chronicle.__prototype__ = function() {
 
   this.mark = function(name) {
     this.index.setRef(name, this.versioned.getState());
-  }
+  };
 
   // Provides the id of a previously marked version.
   // --------
@@ -364,7 +406,7 @@ Chronicle.__prototype__ = function() {
     _.each(path, function(id) {
       changes.push(this.index.get(id));
     }, this);
-  }
+  };
 };
 
 Chronicle.prototype = new Chronicle.__prototype__();
@@ -388,8 +430,8 @@ var Index = function() {
   this.changes = {};
   this.refs = {};
   this.children = {};
-  this.changes[Chronicle.Index.ROOT_ID] = Chronicle.Index.ROOT;
-  this.children[Chronicle.Index.ROOT_ID] = [];
+  this.changes[ROOT.id] = ROOT;
+  this.children[ROOT.id] = [];
 };
 
 Index.__prototype__ = function() {
@@ -444,7 +486,7 @@ Index.__prototype__ = function() {
   // --------
   //
 
-  this.children = function(id) {
+  this.getChildren = function(id) {
     throw new errors.SubstanceError("Not implemented.");
   };
 
@@ -473,7 +515,7 @@ Index.__prototype__ = function() {
 
   this.setRef = function(name, id) {
     this.refs[name] = id;
-  }
+  };
 
   // Looks-up a change via name.
   // ---------
@@ -481,20 +523,15 @@ Index.__prototype__ = function() {
 
   this.getRef = function(name) {
     return this.refs[name];
-  }
+  };
 
 };
 
 Index.prototype = new Index.__prototype__();
 
-Index.ROOT_ID = "ROOT";
-var ROOT = new Change(true, null, {
-    id: Index.ROOT_ID
-});
-ROOT.parents = [];
+Index.INVALID = "INVALID";
 Index.ROOT = ROOT;
 
-Index.INVALID = "INVALID";
 
 Index.create = function() {
   throw new errors.SubstanceError("Not implemented.");
@@ -503,7 +540,7 @@ Index.create = function() {
 // A interface that must be implemented by objects that should be versioned.
 var Versioned = function(chronicle) {
   this.chronicle = chronicle;
-  this.state = Chronicle.Index.ROOT_ID;
+  this.state = ROOT.id;
   chronicle.manage(this);
 };
 
@@ -522,29 +559,34 @@ Versioned.__prototype__ = function() {
   //
 
   this.revert = function(change) {
+    change = this.invert(change);
+    this.apply(change);
+  };
+
+  // Inverts a given change
+  // --------
+  //
+
+  this.invert = function(change) {
     throw new errors.SubstanceError("Not implemented.");
   };
 
-  // Swaps two changes.
+  // Transforms two sibling changes.
   // --------
   //
-  // Some systems can not change the order of changes directly but need to
-  // transform the changes so that they can be applied in swapped order.
+  // This is the `transform` operator provided by Operational Transformation.
   //
-  // The implementation must make sure that the following holds:
+  //       / - a            / - a - b' \
+  //      o          ~ >   o             p
+  //       \ - b            \ - b - a' /
   //
-  // Consider a sequence of (valid) changes:
-  //    A - B - C
+  // I.e., the result of applying `a - b'` must lead to the same result as
+  // applying `b - a'`.
   //
-  // Calling `swapped(B, C);` should return a tuple `[C', B']`
-  // which can be applied to A, so that
-  //    A - C' - B'
-  // is again a valid sequence and  B' and B / C and C' are semantically equivalent.
-  //
-
-  this.swapped = function(first, second) {
-    // the trivial implementation
-    return [second, first];
+  // > From a GIT point of view this related to rebasing. 
+    
+  this.transform = function(first, second) {
+    throw new errors.SubstanceError("Not implemented.");
   };
 
   // Provides the current state.
@@ -570,7 +612,7 @@ Versioned.__prototype__ = function() {
   //
 
   this.reset = function() {
-    this.state = Index.ROOT_ID;
+    this.state = ROOT.id;
   };
 };
 

@@ -47,10 +47,10 @@ VersionedComputador.__prototype__ = function() {
   var __super__ = util.prototype(this);
 
   var inverse = {
-    plus:   __super__.minus,
-    minus:  __super__.plus,
-    times:  __super__.div,
-    div:  __super__.times
+    plus:   "minus",
+    minus:  "plus",
+    times:  "div",
+    div:  "times"
   };
 
   function adapt(name) {
@@ -82,16 +82,33 @@ VersionedComputador.__prototype__ = function() {
     this.chronicle.record(rec);
   };
 
+  this.transform = function(a, b) {
+    // all changes are independent
+    return [a,b];
+  };
+
   this.apply = function(change) {
     // do not call the recording version
     __super__[change.op].call(this, change.val);
   };
 
+  // override this, as it is easier done directly
   this.revert = function(change) {
     if (change.orig) this.result = change.orig;
-    else inverse[change.op].call(this, change.val);
+    else __super__[inverse[change.op]].call(this, change.val);
   };
 
+  this.invert = function(change) {
+    var inverted = {};
+    inverted.op = inverse[change.op];
+    if (change.orig) {
+      inverted.val = change.orig;
+      inverted.orig = change.val;
+    } else {
+      inverted.val = change.val;
+    }
+    return inverted;
+  }
 
   this.reset = function() {
     __super__.reset.call(this);
