@@ -5,13 +5,13 @@ A git inspired versioning API based on Operational Transformations (OT).
 The actual content to be versioned or a persistence mechanism (repository) is not addressed in this module.
 Instead one would have to create an Adapter which is implementing an Operational Transform interface.
 
-The module is only some days - so, hey... it's still a baby.
+> Note: The module is only some days old - so, hey... it's still a baby.
 
 Current state:
 
 - Graph implementation that allows to work with versions as we know it from GIT: branching, merging, rebasing etc.
 - Theoretical foundation for mapping VCS concepts to the OT theory.
-- Adapter for using Text operation ot (see (https://github.com/Operational-Transformation)).
+- Adapter for using Text operation ot (see (https://github.com/Operational-Transformation) ).
 
 Theory
 --------
@@ -81,6 +81,11 @@ and form the basic toolset for the algorithms used for Versioning.
 Additionally, we will have to add conflict detection.
 
 #### Principal Rebase
+
+Rebasing is in git the operation to transplanting a change (or sub-graph)
+to a new target parent.
+We call a principal rebase, those where the target of the rebase is a sibling of
+the change to be rebased.
 
 Consider the following situation:
 
