@@ -620,9 +620,30 @@ Versioned.__prototype__ = function() {
   //
   // > From a GIT point of view this related to rebasing.
 
-  this.transform = function(first, second) {
+  this.transform = function(a, b) {
     throw new errors.SubstanceError("Not implemented.");
   };
+
+  // Provides a representation of the conflict between
+  // two changes.
+  // --------
+  //
+  // If two changes `a` and `b` as in the following graph should not be applied
+  // after transformation because they contain conflicting changes,
+  // then this method should return a tuple `(a~, b~)` which can be used to
+  // resolve the conflict or give feedback before transformation.
+  //
+  //       / - a   !!!         / - a - a~ - b' \           / - a           \
+  //      o        !!!  ~ >   o                 o   or    o                 o
+  //       \ - b   !!!         \ - b           /           \ - b - b~ - a' /
+  //
+  // If no conflict is detected, the method should return `false`.
+  //
+  // TODO: re-think how such a diff would be applied.
+
+  this.conflict = function(a, b) {
+    throw new errors.SubstanceError("Not implemented.");
+  }
 
   // Provides the current state.
   // --------

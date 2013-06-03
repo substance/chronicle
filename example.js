@@ -87,6 +87,10 @@ VersionedComputador.__prototype__ = function() {
     return [a,b];
   };
 
+  this.conflict = function(a, b) {
+    return false;
+  }
+
   this.apply = function(change) {
     // do not call the recording version
     __super__[change.op].call(this, change.val);
