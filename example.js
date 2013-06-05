@@ -87,7 +87,7 @@ VersionedComputador.__prototype__ = function() {
     return [a,b];
   };
 
-  this.conflict = function(a, b) {
+  this.hasConflict = function(a, b) {
     return false;
   }
 

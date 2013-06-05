@@ -15,11 +15,13 @@ if (root.exports) {
 errors.define("ChronicleError", -1);
 errors.define("ChangeError", -1);
 
-var MergeError = function(message, data) {
-  errors.SubstanceError.call(this, "MergeError", -1, message);
-  this.data = data;
+var MergeConflict = function(a,b) {
+  ChronicleError.call(this, "Merge conflict: " + a.id + " vs. " + b.id);
+  this.a = a;
+  this.b = b;
 };
-errors.MergeError = MergeError;
+MergeConflict.prototype = errors.ChronicleError.prototype;
+errors.MergeConflict = MergeConflict;
 
 // A change recorded in the chronicle
 // ========
