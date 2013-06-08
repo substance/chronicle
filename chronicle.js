@@ -613,32 +613,17 @@ Versioned.__prototype__ = function() {
   // I.e., the result of applying `a - b'` must lead to the same result as
   // applying `b - a'`.
   //
-  // > From a GIT point of view this related to rebasing.
+  // options:
+  //
+  //  - check:    enables conflict checking. A MergeConflict is thrown as an error
+  //              when a conflict is found during transformation.
+  //  - inplace:  transforms the given instances a and b directly, without copying.
+  //
+  // returns: [a', b']
 
-  this.transform = function(a, b) {
+  this.transform = function(a, b, options) {
     throw new errors.SubstanceError("Not implemented.");
   };
-
-  // Provides a representation of the conflict between
-  // two changes.
-  // --------
-  //
-  // If two changes `a` and `b` as in the following graph should not be applied
-  // after transformation because they contain conflicting changes,
-  // then this method should return a tuple `(a~, b~)` which can be used to
-  // resolve the conflict or give feedback before transformation.
-  //
-  //       / - a   !!!         / - a - a~ - b' \           / - a           \
-  //      o        !!!  ~ >   o                 o   or    o                 o
-  //       \ - b   !!!         \ - b           /           \ - b - b~ - a' /
-  //
-  // If no conflict is detected, the method should return `false`.
-  //
-  // TODO: re-think how such a diff would be applied.
-
-  this.conflict = function(a, b) {
-    throw new errors.SubstanceError("Not implemented.");
-  }
 
   // Provides the current state.
   // --------
