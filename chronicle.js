@@ -25,7 +25,6 @@ errors.define("MergeConflict", -1);
 // options:
 //   - id: a custom id for the change
 
-
 var Change = function(parent, data, options) {
   options = options || {};
 
@@ -66,10 +65,11 @@ Change.fromJSON = function(json) {
 };
 
 // a dedicated global root node
-var ROOT = new Change(true, null, {
-  id: "ROOT"
+var ROOT = "ROOT";
+var ROOT_NODE = new Change(true, null, {
+  id: ROOT
 });
-ROOT.parent = ROOT.id;
+ROOT_NODE.parent = ROOT.id;
 
 // A dedicated Change for merging multiple Chronicle histories.
 // ========
@@ -352,7 +352,7 @@ Chronicle.__prototype__ = function() {
   this.rewind = function() {
     var current = this.index.get(this.versioned.getState());
     var previous;
-    if (current.id === ROOT.id) return;
+    if (current.id === ROOT) return;
     previous = current.parent;
     this.step(previous);
   };
@@ -452,8 +452,8 @@ var Index = function() {
   this.changes = {};
   this.refs = {};
   this.children = {};
-  this.changes[ROOT.id] = ROOT;
-  this.children[ROOT.id] = [];
+  this.changes[ROOT] = ROOT_NODE;
+  this.children[ROOT] = [];
 };
 
 Index.__prototype__ = function() {
@@ -560,7 +560,7 @@ Index.__prototype__ = function() {
 Index.prototype = new Index.__prototype__();
 
 Index.INVALID = "INVALID";
-Index.ROOT = ROOT;
+Index.ROOT = ROOT_NODE;
 
 
 Index.create = function() {
@@ -660,6 +660,7 @@ Chronicle.Transformed = Transformed;
 Chronicle.Diff = Diff;
 Chronicle.Index = Index;
 Chronicle.Versioned = Versioned;
+Chronicle.ROOT = ROOT;
 
 Chronicle.mergeConflict = function(a, b) {
   var conflict = new errors.MergeConflict("Merge conflict: " + JSON.stringify(source) +" vs " + JSON.stringify(target));
