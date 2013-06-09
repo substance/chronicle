@@ -69,7 +69,7 @@ var ROOT = "ROOT";
 var ROOT_NODE = new Change(true, null, {
   id: ROOT
 });
-ROOT_NODE.parent = ROOT.id;
+ROOT_NODE.parent = ROOT;
 
 // A dedicated Change for merging multiple Chronicle histories.
 // ========
@@ -429,6 +429,7 @@ Chronicle.__prototype__ = function() {
       changes.push(this.index.get(id));
     }, this);
   };
+
 };
 
 Chronicle.prototype = new Chronicle.__prototype__();
@@ -570,7 +571,7 @@ Index.create = function() {
 // A interface that must be implemented by objects that should be versioned.
 var Versioned = function(chronicle) {
   this.chronicle = chronicle;
-  this.state = ROOT.id;
+  this.state = ROOT;
   chronicle.manage(this);
 };
 
@@ -648,7 +649,7 @@ Versioned.__prototype__ = function() {
   //
 
   this.reset = function() {
-    this.state = ROOT.id;
+    this.state = ROOT;
   };
 };
 
