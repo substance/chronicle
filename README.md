@@ -160,9 +160,9 @@ A merge can thus be achieved by the following steps:
    dependencies of changes.
    In other words, it is always better to revert changes from right to left (newer to older).
 
-> Note: the elimination will create temporary branches. The original changes stay untouched.
-
-> TODO: add an illustration
+   > Note: the elimination will create temporary branches. The original changes stay untouched.
+   >
+   > TODO: add an illustration
 
 2. Reduce `b` to `m_b`: same procedure as with `a`.
 
@@ -182,7 +182,7 @@ Rebasing `b_r` onto `a_k` is done by:
 1. [Eliminating](http://github.com/substance/chronicle#elimination)
    `b_{r-1}, ..., b_1` which results in b_r'
 
-> TODO: add illustration showing a transformed b_r' as sibling of a_1 and b_1
+   > TODO: add illustration showing a transformed b_r' as sibling of a_1 and b_1
 
 2. Iteratively rebase b_r' onto `a_1` to `a_k`
 
