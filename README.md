@@ -7,9 +7,11 @@ Instead one would have to create an adapter which is implementing an OT interfac
 
 > Current state:
 >
-> Chronicle is working, but should be considered experimental, though. There are some examples in our [test suite](https://github.com/substance/tests/tree/master/tests/chronicle).
+> Chronicle is working, but should be considered experimental, though. There are
+> some examples in our [test suite](https://github.com/substance/tests/tree/master/tests/chronicle).
 >
-> We are refactoring our [`data.js`](https://github.com/michael/data) library to use operational transformations.
+> We are refactoring our [`data.js`](https://github.com/michael/data) library
+> to use operational transformations.
 > This way we achieve to provide a means to add versioning to anything that can
 > be modelled with `data.js`
 
@@ -26,8 +28,10 @@ that can be created by applying operations.
 
 OT has its application in real-time collaborative editing, i.e., two or more users edit a
 document simultanously, e.g., as it is possible with Google Docs.
-The OT theory defines a special transformation describes how a temporary divergence can be resolved when two user change the document
-at the same time, to ensure that the users continue to see and work on the exactly same document content.
+The OT theory defines a special transformation describes how a temporary divergence can
+be resolved when two user change the document
+at the same time, to ensure that the users continue to see and work on exactly the
+same document content.
 
 ![Transformation](http://github.com/substance/chronicle/blob/master/images/trafo.jpg?raw=true)
 
@@ -111,7 +115,8 @@ This can be extended iteratively to the case with children changes.
 
 #### Elimination
 
-Now let us consider a more general case, e.g., in the above example we would want to rebase change `c` onto `a`.
+Now let us consider a more general case, e.g., in the above example we would want to
+rebase change `c` onto `a`.
 To reduce this problem to the previous case, we need to eliminate change `b`.
 As all changes are invertible we can introduce an inversion of `b`.
 Then we can apply the following transformation to achieve the desired change `c'`.
@@ -132,13 +137,16 @@ changes. Such conflicts would not be merged silently, but the user would decide 
 Conflicts are domain specific, i.e., the operations need to detect such cases.
 In *Chronicle* we decided not to add a statical detection mechanism but instead
 introduce an option `check` in the OT `transform` method. If the option is enabled,
-`transform` is expected to throw a dedicated error, `errors.MergeConflict`, which contains the two operations causing a conflict.
+`transform` is expected to throw a dedicated error, `errors.MergeConflict`,
+which contains the two operations causing a conflict.
 
 #### Merge
 
-The most complex operation in *Chronicle* is merging. All merging strategies are mapped to the case of a manually defined sequence of changes.
+The most complex operation in *Chronicle* is merging. All merging strategies are mapped
+to the case of a manually defined sequence of changes.
 
-Given two branches `a = (a_1, ..., a_k)` and `b = (b_1, ..., b_r)`, a merge `m` defines a sequence of changes of `a` and `b`.
+Given two branches `a = (a_1, ..., a_k)` and `b = (b_1, ..., b_r)`, a merge `m` defines
+a sequence of changes of `a` and `b`.
 Let `m_a` and `m_b` be the intersection of `m` with `a` and `b`, respectively.
 
 > Note: at the moment, it is not possible to reorder changes, i.e., the changes in `m_a`
@@ -146,9 +154,11 @@ Let `m_a` and `m_b` be the intersection of `m` with `a` and `b`, respectively.
 
 A merge can thus be achieved by the following steps:
 
-1.  Reduce `a` to `m_a`: *eliminate* all changes in `a` that are not in `m_a`.
-    This has to be done in reverse order, i.e., from right to left, as not to violate dependencies of changes.
-    In other words, it is always better to revert changes from right to left (newer to older).
+1. Reduce `a` to `m_a`: [eliminate](http://github.com/substance/chronicle#elimination)
+   all changes in `a` that are not in `m_a`.
+   This has to be done in reverse order, i.e., from right to left, as not to violate
+   dependencies of changes.
+   In other words, it is always better to revert changes from right to left (newer to older).
 
 > Note: the elimination will create temporary branches. The original changes stay untouched.
 
@@ -156,8 +166,8 @@ A merge can thus be achieved by the following steps:
 
 2. Reduce `b` to `m_b`: same procedure as with `a`.
 
-3. Merge `m_a` and `m_b`: this is done by iteratively apply a *principal rebase*
-   (as described above).
+3. Merge `m_a` and `m_b`: this is done by iteratively apply a
+   [Principal Rebase](http://github.com/substance/chronicle#principal-rebase).
 
 #### Rebase
 
@@ -169,7 +179,8 @@ Consider this situation:
 
 Rebasing `b_r` onto `a_k` is done by:
 
-1. Eliminating `b_{l-1}, ..., b_1` which results in b_r'
+1. [Eliminating](http://github.com/substance/chronicle#elimination)
+   `b_{r-1}, ..., b_1` which results in b_r'
 
 > TODO: add illustration showing a transformed b_r' as sibling of a_1 and b_1
 
