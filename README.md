@@ -6,8 +6,10 @@ The actual content to be versioned or a persistence mechanism is not addressed i
 Instead one would have to create an adapter which is implementing an OT interface.
 
 > Current state:
-> Chronicle is working, but should be considered experimental, though. There are some examples in our test suite (https://github.com/substance/tests/tree/master/tests/chronicle).
-> We are refactoring our `data.js` library (https://github.com/michael/data) to use operational transformations.
+>
+> Chronicle is working, but should be considered experimental, though. There are some examples in our [test suite](https://github.com/substance/tests/tree/master/tests/chronicle).
+>
+> We are refactoring our [`data.js`](https://github.com/michael/data) library to use operational transformations.
 > This way we achieve to provide a means to add versioning to anything that can
 > be modelled with `data.js`
 
@@ -34,7 +36,7 @@ at the same time, to ensure that the users continue to see and work on the exact
 The transformation creates two (new) changes `a'` and `b'` which can be applied
 to the original versions to achieve a common state.
 
-### Version Control (GIT)
+### Version Control
 
 The underlying model in GIT is very similar in the regard that there is a graph of
 changes, so called commits.
@@ -49,13 +51,13 @@ Different paths of changes are called branches.
 To be ables to have a common base to work on, one would need to bring branches
 together again, what is called a *merge*.
 One of the users would decide to merge and record his decision as an extra change.
-In very many cases the changes of different users do not interfer, i.e., they are no conflicting.
-Typically, a merge can be done automatically then.
+In very many cases the changes of different users do not interfer, i.e., they are not
+conflicting. Then, a merge typically can be applied automatically.
 
 ![Merge](http://github.com/substance/chronicle/blob/master/images/merge.jpg?raw=true)
 
-Conflicting changes are not addressed by the OT. E.g., if two users add the same text at the same time
-it will be there twice.
+Conflicting changes are not addressed by the OT. E.g., if two users add the same text
+at the same time it will be there twice.
 
 A different important aspect in VCS is to have control about what changes exactly are merged
 into the common repository. In the OT usecase all users have the same role and permissions.
@@ -64,7 +66,7 @@ Contrarily, in VCS typically there are gate-keepers who ensure quality of commit
 
 ### Operational Tranform based Version-Control
 
-A great part for implementing a GIT-style VCS is already given by the OT framework.
+A great part for implementing a VCS is already given by the OT framework.
 However, there are minor conceptual differences which need a bit of an algorithmic foundation.
 
 We introduce two basic operations that can be derived from the OT framework
@@ -80,10 +82,8 @@ Additionally, we will have to add conflict detection.
 
 #### Principal Rebase
 
-Rebasing is in git the operation to transplanting a change (or sub-graph)
-to a new target parent.
-We call a principal rebase, those where the target of the rebase is a sibling of
-the change to be rebased.
+Rebasing is an operation which transplants a change (or sub-graph) to a new target parent.
+We call a principal rebase, those where the two involved changes are siblings.
 
 Consider the following situation:
 
@@ -159,3 +159,24 @@ A merge can thus be achieved by the following the steps:
 3. Merge `m_a` and `m_b`: this is done by iteratively apply a *principal rebase*
    (as described above).
 
+#### Rebase
+
+A rebase can be derived from the merge implementation.
+
+Consider this situation:
+
+> TODO: add illustration showing two branches a and b having a common root r
+
+Rebasing `b_l` onto `a_k` is done by:
+
+1. Eliminating `b_{l-1}, ..., b_1` which results in b_l'
+
+> TODO: add illustration showing a transformed b_l' as sibling of a_1 and b_1
+
+2. Iteratively rebase b_l' onto `a_1` to `a_k`
+
+> TODO: add illustration showing a transformed b_l as sibling of a_1
+
+This of course would fail, if `b_l` was depending on any of the eliminated changes.
+
+> Note: not yet implemented.
