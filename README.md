@@ -138,13 +138,13 @@ introduce an option `check` in the OT `transform` method. If the option is enabl
 
 The most complex operation in *Chronicle* is merging. All merging strategies are mapped to the case of a manually defined sequence of changes.
 
-Given two branches `a = (a_1, ..., a_k)` and `b = (b_1, ..., b_l)`, a merge `m` defines a sequence of changes of `a` and `b`.
+Given two branches `a = (a_1, ..., a_k)` and `b = (b_1, ..., b_r)`, a merge `m` defines a sequence of changes of `a` and `b`.
 Let `m_a` and `m_b` be the intersection of `m` with `a` and `b`, respectively.
 
 > Note: at the moment, it is not possible to reorder changes, i.e., the changes in `m_a`
   must have the same order as in `a`, and the same with `m_b` and `b`.
 
-A merge can thus be achieved by the following the steps:
+A merge can thus be achieved by the following steps:
 
 1.  Reduce `a` to `m_a`: *eliminate* all changes in `a` that are not in `m_a`.
     This has to be done in reverse order, i.e., from right to left, as not to violate dependencies of changes.
@@ -167,16 +167,16 @@ Consider this situation:
 
 > TODO: add illustration showing two branches a and b having a common root r
 
-Rebasing `b_l` onto `a_k` is done by:
+Rebasing `b_r` onto `a_k` is done by:
 
-1. Eliminating `b_{l-1}, ..., b_1` which results in b_l'
+1. Eliminating `b_{l-1}, ..., b_1` which results in b_r'
 
-> TODO: add illustration showing a transformed b_l' as sibling of a_1 and b_1
+> TODO: add illustration showing a transformed b_r' as sibling of a_1 and b_1
 
-2. Iteratively rebase b_l' onto `a_1` to `a_k`
+2. Iteratively rebase b_r' onto `a_1` to `a_k`
 
-> TODO: add illustration showing a transformed b_l as sibling of a_1
+> TODO: add illustration showing a transformed b_r as sibling of a_1
 
-This of course would fail, if `b_l` was depending on any of the eliminated changes.
+This of course would fail, if `b_r` was depending on any of the eliminated changes.
 
 > Note: not yet implemented.
