@@ -87,10 +87,6 @@ VersionedComputador.__prototype__ = function() {
     return [a,b];
   };
 
-  this.hasConflict = function(a, b) {
-    return false;
-  }
-
   this.apply = function(change) {
     // do not call the recording version
     __super__[change.op].call(this, change.val);
@@ -112,7 +108,7 @@ VersionedComputador.__prototype__ = function() {
       inverted.val = change.val;
     }
     return inverted;
-  }
+  };
 
   this.reset = function() {
     __super__.reset.call(this);

@@ -664,11 +664,11 @@ Chronicle.Versioned = Versioned;
 Chronicle.ROOT = ROOT;
 
 Chronicle.mergeConflict = function(a, b) {
-  var conflict = new errors.MergeConflict("Merge conflict: " + JSON.stringify(source) +" vs " + JSON.stringify(target));
+  var conflict = new errors.MergeConflict("Merge conflict: " + JSON.stringify(a) +" vs " + JSON.stringify(b));
   conflict.a = a;
   conflict.b = b;
   return conflict;
-}
+};
 
 if (typeof exports === 'undefined') {
   root.Substance.Chronicle = Chronicle;
