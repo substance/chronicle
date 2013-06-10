@@ -2,16 +2,14 @@ Chronicle
 =========
 
 A git inspired versioning API based on Operational Transformations (OT).
-The actual content to be versioned or a persistence mechanism (repository) is not addressed in this module.
-Instead one would have to create an Adapter which is implementing an Operational Transform interface.
+The actual content to be versioned or a persistence mechanism is not addressed in this module.
+Instead one would have to create an adapter which is implementing an OT interface.
 
-> Note: The module is only some days old - so, hey... it's still a baby.
-
-Current state:
-
-- Graph implementation that allows to work with versions as we know it from GIT: branching, merging, rebasing etc.
-- Theoretical foundation for mapping VCS concepts to the OT theory.
-- Adapter for using Text operation ot (see (https://github.com/Operational-Transformation) ).
+> Current state:
+> Chronicle is working, but should be considered experimental, though. There are some examples in our test suite (https://github.com/substance/tests/tree/master/tests/chronicle).
+> We are refactoring our `data.js` library (https://github.com/michael/data) to use operational transformations.
+> This way we achieve to provide a means to add versioning to anything that can
+> be modelled with `data.js`
 
 Theory
 --------
@@ -74,7 +72,7 @@ and form the basic toolset for the algorithms used for Versioning.
 
 - Principal Rebase: this is a straight-forward extension of the transform operator
   which can be applied to on graphs.
-  
+
 - Elimination: this allows to eliminate the effect of a change by rebasing a graph on
   the parent of the change to be eliminated.
 
@@ -129,13 +127,35 @@ the transformation to all children recursively.
 
 #### Conflict detection
 
-TODO: coming soon.
+In contrast to online collaborative editing, for a VCS it is necessary to detect conflicting
+changes. Such conflicts would not be merged silently, but the user would decide what to do.
+Conflicts are domain specific, i.e., the operations need to detect such cases.
+In *Chronicle* we decided not to add a statical detection mechanism but instead
+introduce an option `check` in the OT `transform` method. If the option is enabled,
+`transform` is expected to throw a dedicated error, `errors.MergeConflict`, which contains the two operations causing a conflict.
 
-We will try to describe the concept of a conflict in general, and how OT libraries
-can be adapted to give this information, using the example of Text Operations and Array Operations.
+#### Merge
 
-#### Algorithms
+The most complex operation in *Chronicle* is merging. All merging strategies are mapped to the case of a manually defined sequence of changes.
 
-TODO: coming soon.
+Given two branches `a = (a_1, ..., a_k)` and `b = (b_1, ..., b_l)`, a merge `m` defines a sequence of changes of `a` and `b`.
+Let `m_a` and `m_b` be the intersection of `m` with `a` and `b`, respectively.
 
-We will describe the major algorithms formally.
+> Note: at the moment, it is not possible to reorder changes, i.e., the changes in `m_a`
+  must have the same order as in `a`, and the same with `m_b` and `b`.
+
+A merge can thus be achieved by the following the steps:
+
+1.  Reduce `a` to `m_a`: *eliminate* all changes in `a` that are not in `m_a`.
+    This has to be done in reverse order, i.e., from right to left, as not to violate dependencies of changes.
+    In other words, it is always better to revert changes from right to left (newer to older).
+
+> Note: the elimination will create temporary branches. The original changes stay untouched.
+
+> TODO: add an illustration
+
+2. Reduce `b` to `m_b`: same procedure as with `a`.
+
+3. Merge `m_a` and `m_b`: this is done by iteratively apply a *principal rebase*
+   (as described above).
+
