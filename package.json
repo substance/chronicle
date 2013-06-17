@@ -1,0 +1,12 @@
+{
+  "name"          : "chronicle",
+  "description"   : "A Javascript versioning library.",
+  "url"           : "http://github.com/substance/chronicle/",
+  "keywords"      : ["substance", "versioning"],
+  "author"        : "Oliver Buchtala",
+  "contributors"  : [],
+  "dependencies"  : ["underscore"],
+  "lib"           : ".",
+  "main"          : "index",
+  "version"       : "0.1.0"
+}

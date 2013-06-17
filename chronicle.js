@@ -4,8 +4,9 @@
 
 var util, errors, _;
 
-if (root.exports) {
-  throw "Node.js support not implemented";
+if (typeof exports !== 'undefined') {
+  util   = require('./lib/util/util');
+  errors   = require('./lib/util/errors');
 } else {
   util = root.Substance.util;
   errors = root.Substance.errors;
