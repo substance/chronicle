@@ -358,17 +358,6 @@ Chronicle.__prototype__ = function() {
     this.step(previous);
   };
 
-  // Imports all commits from another index
-  // --------
-  //
-  // Note: this corresponds to a 'git fetch', which only adds commits without
-  // applying any changes.
-  //
-
-  this.import = function(otherIndex) {
-    throw new errors.SubstanceError("Not implemented.");
-  };
-
   // Create a commit that merges a history specified by its last commit.
   // --------
   //
@@ -555,6 +544,17 @@ Index.__prototype__ = function() {
 
   this.getRef = function(name) {
     return this.refs[name];
+  };
+
+  // Imports all commits from another index
+  // --------
+  //
+  // Note: this corresponds to a 'git fetch', which only adds commits without
+  // applying any changes.
+  //
+
+  this.import = function(otherIndex) {
+    throw new errors.SubstanceError("Not implemented.");
   };
 
 };
