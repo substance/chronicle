@@ -535,6 +535,9 @@ Index.__prototype__ = function() {
   //
 
   this.setRef = function(name, id) {
+    if (this.changes[id] === undefined) {
+      throw new errors.ChronicleError("Unknown change: " + id);
+    }
     this.refs[name] = id;
   };
 
@@ -544,6 +547,10 @@ Index.__prototype__ = function() {
 
   this.getRef = function(name) {
     return this.refs[name];
+  };
+
+  this.listRefs = function() {
+    return Object.keys(this.refs);
   };
 
   // Imports all commits from another index
