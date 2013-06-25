@@ -26,10 +26,12 @@ errors.define("MergeConflict", -1);
 // options:
 //   - id: a custom id for the change
 
-var Change = function(parent, data, options) {
-  options = options || {};
+var Change = function(id, parent, data) {
 
-  this.id = options.id || Chronicle.uuid();
+  if (!id) {
+    throw new errors.ChangeError("Every change needs a unique id.");
+  }
+  this.id = id;
 
   if (!parent) {
     throw new errors.ChangeError("Every change needs a parent.");
@@ -44,6 +46,9 @@ var Change = function(parent, data, options) {
   // a change.
 
   this.data = data;
+
+  this.uuid = util.uuid;
+
 };
 
 Change.prototype = {
@@ -67,9 +72,7 @@ Change.fromJSON = function(json) {
 
 // a dedicated global root node
 var ROOT = "ROOT";
-var ROOT_NODE = new Change(true, null, {
-  id: ROOT
-});
+var ROOT_NODE = new Change(ROOT, true, null);
 ROOT_NODE.parent = ROOT;
 
 // A dedicated Change for merging multiple Chronicle histories.
@@ -95,9 +98,8 @@ ROOT_NODE.parent = ROOT;
 //    }
 //
 
-var Merge = function(main, branches, options) {
-  Change.call(this, main, null, options);
-
+var Merge = function(id, main, branches) {
+  Change.call(this, id, main);
   if (!branches) {
     throw new errors.ChangeError("Missing branches.");
   }
@@ -131,8 +133,9 @@ Merge.fromJSON = function(data) {
 // For the time being, the data is persisted redundantly.
 // To be able to track the original source of the change,
 // this type is introduced.
-var Transformed = function(parent, data, original, options) {
-  Change.call(this, parent, data, options);
+var Transformed = function(id, parent, data, original) {
+  Change.call(this, id, parent, data);
+
   this.original = original;
 };
 
@@ -430,10 +433,6 @@ Chronicle.HYSTERICAL = true;
 
 Chronicle.create = function(index) {
   throw new errors.SubstanceError("Not implemented.");
-};
-
-Chronicle.uuid = function() {
-  return util.uuid();
 };
 
 // A directed acyclic graph of Commit instances.
