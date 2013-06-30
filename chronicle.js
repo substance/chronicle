@@ -431,7 +431,11 @@ Chronicle.prototype = new Chronicle.__prototype__();
 // disable this if you need more performance giving up guaranteed integrity.
 Chronicle.HYSTERICAL = true;
 
-Chronicle.create = function(index) {
+// The factory method to create a Chronicle instance
+// --------
+// options:
+//  store: a Substance Store used to persist the index
+Chronicle.create = function(options) {
   throw new errors.SubstanceError("Not implemented.");
 };
 
@@ -439,6 +443,8 @@ Chronicle.create = function(index) {
 // ========
 //
 var Index = function() {
+  this.__id__ = util.uuid();
+
   this.changes = {};
   this.refs = {};
   this.children = {};
@@ -471,14 +477,6 @@ Index.__prototype__ = function() {
   //
 
   this.contains = function(changeId) {
-    throw new errors.SubstanceError("Not implemented.");
-  };
-
-  // Connects a node to a new parent
-  // --------
-  //
-
-  this.reconnect = function(child, parent) {
     throw new errors.SubstanceError("Not implemented.");
   };
 
