@@ -291,6 +291,8 @@ var Chronicle = function(index) {
   // the versioned object which must implement the 'Versioned' interface.
   this.versioned = null;
 
+  // flags to control the chronicle's behaviour
+  this.__mode__ = Chronicle.DEFAULT_MODE;
 };
 
 Chronicle.__prototype__ = function() {
@@ -427,9 +429,14 @@ Chronicle.__prototype__ = function() {
 
 Chronicle.prototype = new Chronicle.__prototype__();
 
-// enables early failing sanity checks
-// disable this if you need more performance giving up guaranteed integrity.
-Chronicle.HYSTERICAL = true;
+// only allow changes that have been checked via instant apply+revert
+Chronicle.PEDANTIC_RECORD = 1 << 1;
+
+// performs a reset for all imported changes
+Chronicle.PEDANTIC_IMPORT = 1 << 2;
+
+Chronicle.HYSTERICAL = Chronicle.PEDANTIC_RECORD | Chronicle.PEDANTIC_RECORD;
+Chronicle.DEFAULT_MODE = Chronicle.PEDANTIC_IMPORT;
 
 // The factory method to create a Chronicle instance
 // --------
