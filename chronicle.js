@@ -291,6 +291,8 @@ var Chronicle = function(index) {
   // the versioned object which must implement the 'Versioned' interface.
   this.versioned = null;
 
+  // flags to control the chronicle's behaviour
+  this.__mode__ = Chronicle.DEFAULT_MODE;
 };
 
 Chronicle.__prototype__ = function() {
@@ -427,11 +429,20 @@ Chronicle.__prototype__ = function() {
 
 Chronicle.prototype = new Chronicle.__prototype__();
 
-// enables early failing sanity checks
-// disable this if you need more performance giving up guaranteed integrity.
-Chronicle.HYSTERICAL = true;
+// only allow changes that have been checked via instant apply+revert
+Chronicle.PEDANTIC_RECORD = 1 << 1;
 
-Chronicle.create = function(index) {
+// performs a reset for all imported changes
+Chronicle.PEDANTIC_IMPORT = 1 << 2;
+
+Chronicle.HYSTERICAL = Chronicle.PEDANTIC_RECORD | Chronicle.PEDANTIC_RECORD;
+Chronicle.DEFAULT_MODE = Chronicle.PEDANTIC_IMPORT;
+
+// The factory method to create a Chronicle instance
+// --------
+// options:
+//  store: a Substance Store used to persist the index
+Chronicle.create = function(options) {
   throw new errors.SubstanceError("Not implemented.");
 };
 
@@ -439,6 +450,8 @@ Chronicle.create = function(index) {
 // ========
 //
 var Index = function() {
+  this.__id__ = util.uuid();
+
   this.changes = {};
   this.refs = {};
   this.children = {};
@@ -471,14 +484,6 @@ Index.__prototype__ = function() {
   //
 
   this.contains = function(changeId) {
-    throw new errors.SubstanceError("Not implemented.");
-  };
-
-  // Connects a node to a new parent
-  // --------
-  //
-
-  this.reconnect = function(child, parent) {
     throw new errors.SubstanceError("Not implemented.");
   };
 
