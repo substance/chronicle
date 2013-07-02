@@ -283,7 +283,7 @@ Diff.create = function(reverts, applies) {
 // ========
 //
 
-var Chronicle = function(index) {
+var Chronicle = function(index, options) {
 
   // an instance implementing the 'Index' interface
   this.index = index;
@@ -292,7 +292,7 @@ var Chronicle = function(index) {
   this.versioned = null;
 
   // flags to control the chronicle's behaviour
-  this.__mode__ = Chronicle.DEFAULT_MODE;
+  this.__mode__ = options.mode || Chronicle.DEFAULT_MODE;
 };
 
 Chronicle.__prototype__ = function() {
@@ -435,7 +435,7 @@ Chronicle.PEDANTIC_RECORD = 1 << 1;
 // performs a reset for all imported changes
 Chronicle.PEDANTIC_IMPORT = 1 << 2;
 
-Chronicle.HYSTERICAL = Chronicle.PEDANTIC_RECORD | Chronicle.PEDANTIC_RECORD;
+Chronicle.HYSTERICAL = Chronicle.PEDANTIC_RECORD | Chronicle.PEDANTIC_IMPORT;
 Chronicle.DEFAULT_MODE = Chronicle.PEDANTIC_IMPORT;
 
 // The factory method to create a Chronicle instance
