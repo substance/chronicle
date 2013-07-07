@@ -1,4 +1,4 @@
-(function(root) {
+(function(root) { "use strict";
 
 var _,
     errors,
