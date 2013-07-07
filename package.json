@@ -8,5 +8,12 @@
   "dependencies"  : ["underscore"],
   "lib"           : ".",
   "main"          : "index",
-  "version"       : "0.1.0"
+  "version"       : "0.1.0",
+  "dependencies": {
+    "underscore": "1.4.x",
+    "chai":       "1.7.2"
+  },
+  "scripts": {
+    "test": "mocha tests/test.js"
+  }
 }

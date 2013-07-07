@@ -1,8 +1,18 @@
 (function(root) {
 
-var _ = root._;
-var testchronicle = root.Substance.test.chronicle;
-var Chronicle = root.Substance.Chronicle;
+var _,
+    Chronicle,
+    Calculator;
+
+if (typeof exports !== 'undefined') {
+  _    = require('underscore');
+  Chronicle = require('..');
+  Calculator = require('./example');
+} else {
+  _ = root._;
+  Chronicle = root.Substance.Chronicle;
+  Calculator = root.Substance.Chronicle.Calculator;
+}
 
 var __ID__ = 0;
 var __OP__ = 1;
@@ -62,7 +72,7 @@ var ChronicleTest = function() {
     ID_IDX = 1;
     this.chronicle = Chronicle.create({mode: Chronicle.HYSTERICAL});
     this.index = this.chronicle.index;
-    this.comp = new testchronicle.VersionedComputador(this.chronicle);
+    this.comp = new Calculator.ChronicleAdapter(this.chronicle);
     this.chronicle.uuid = this.uuid;
 
     this.fixture();
@@ -87,6 +97,14 @@ var ChronicleTest = function() {
 
 };
 
-root.Substance.test.ChronicleTest = ChronicleTest;
+// Export
+// ====
+
+if (typeof exports === 'undefined') {
+  root.Substance.Chronicle.AbstractTest = ChronicleTest;
+} else {
+  module.exports = ChronicleTest;
+}
+
 
 })(this);

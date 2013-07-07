@@ -5,18 +5,24 @@
 
 var _, util, Chronicle;
 
-Chronicle = root.Substance.Chronicle;
-util = root.Substance.util;
-_ = root._;
+if (typeof exports !== 'undefined') {
+  _   = require('underscore');
+  util   = require('substance-util');
+  Chronicle = require('..');
+} else {
+  _ = root._;
+  util = root.Substance.util;
+  Chronicle = root.Substance.Chronicle;
+}
 
 // Module
 // ====
 
-var Computador = function() {
+var Calculator = function() {
   this.result = 0;
 };
 
-Computador.prototype = {
+Calculator.prototype = {
 
   plus: function(val) {
     this.result += val;
@@ -37,12 +43,12 @@ Computador.prototype = {
   }
 };
 
-var VersionedComputador = function(chronicle) {
-  Computador.call(this);
+var ChronicleAdapter = function(chronicle) {
+  Calculator.call(this);
   Chronicle.Versioned.call(this, chronicle);
 };
 
-VersionedComputador.__prototype__ = function() {
+ChronicleAdapter.__prototype__ = function() {
 
   var __super__ = util.prototype(this);
 
@@ -117,19 +123,17 @@ VersionedComputador.__prototype__ = function() {
 
 };
 
-VersionedComputador.__prototype__.prototype = _.extend({}, Computador.prototype, Chronicle.Versioned.prototype);
-VersionedComputador.prototype = new VersionedComputador.__prototype__();
+ChronicleAdapter.__prototype__.prototype = _.extend({}, Calculator.prototype, Chronicle.Versioned.prototype);
+ChronicleAdapter.prototype = new ChronicleAdapter.__prototype__();
+Calculator.ChronicleAdapter = ChronicleAdapter;
 
 // Export
 // ====
 
-var exports = {
-  Computador: Computador,
-  VersionedComputador: VersionedComputador
-};
-
-
-if (!root.Substance.test.chronicle) root.Substance.test.chronicle = {};
-_.extend(root.Substance.test.chronicle, exports);
+if (typeof exports === 'undefined') {
+  root.Substance.Chronicle.Calculator = Calculator;
+} else {
+  module.exports = Calculator;
+}
 
 })(this);

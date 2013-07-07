@@ -1,12 +1,29 @@
 (function(root) {
 
-var Substance = root.Substance;
-var errors = Substance.errors;
-var assert = Substance.assert;
-var _ = root._;
+var _,
+    errors,
+    assert,
+    Chronicle,
+    ChronicleTest,
+    registerTest;
 
-var Chronicle = Substance.Chronicle;
-var ChronicleTest = Substance.test.ChronicleTest;
+if (typeof exports !== 'undefined') {
+  _    = require('underscore');
+  errors   = require('substance-util/errors');
+  assert   = require('substance-test/assert');
+  Chronicle = require('..');
+  ChronicleTest = require('./chronicle_test');
+  var test = require('substance-test');
+  registerTest = test.registerTest;
+} else {
+  _ = root._;
+  errors = root.Substance.errors;
+  assert = root.Substance.assert;
+  Chronicle = root.Substance.Chronicle;
+  ChronicleTest = root.Substance.Chronicle.AbstractTest;
+  registerTest = root.Substance.registerTest;
+}
+
 var ROOT = Chronicle.ROOT;
 
 // Index structure:
@@ -19,7 +36,6 @@ var ROOT = Chronicle.ROOT;
 var C1 = new Chronicle.Change("01", ROOT, "bla");
 var OP = function(op, val, id, parent) {
   var data = { op: op, val: val };
-  var options = { id: id };
   return new Chronicle.Change(id, parent, data);
 };
 var PLUS = function(id, parents) {
@@ -27,12 +43,12 @@ var PLUS = function(id, parents) {
 };
 
 var Basics = function() {
-
   ChronicleTest.call(this);
 
   // deactivate the default fixture
   // for testing basic behavior
   this.default_fixture = this.fixture;
+
   this.fixture = function() {};
 
   this.actions = [
@@ -42,7 +58,7 @@ var Basics = function() {
       assert.isTrue(this.index.contains(C1.id));
 
       // should reject
-      assert.exception(errors.SubstanceError, function() {
+      assert.exception(errors.ChronicleError, function() {
         this.index.add(PLUS("bla", "doesnotexist"));
       }, this);
     },
@@ -99,7 +115,7 @@ var Basics = function() {
       other.add(OP("div", 0, "2", "1"));
       other.add(PLUS("3", "2"));
 
-      assert.exception(errors.SubstanceError, function() {
+      assert.exception(errors.ChronicleError, function() {
         this.chronicle.import(other);
       }, this);
     },
@@ -160,8 +176,9 @@ var Basics = function() {
 
   ];
 };
+
 Basics.prototype = ChronicleTest.prototype;
 
-root.Substance.registerTest(['Chronicle', 'Basics'], new Basics());
+registerTest(['Chronicle', 'Basics'], new Basics());
 
 })(this);
