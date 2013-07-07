@@ -1,8 +1,20 @@
 (function(root) {
 
-var assert = root.Substance.assert;
-var Chronicle = root.Substance.Chronicle;
-var ArrayOperation = Chronicle.ot.ArrayOperation;
+var assert,
+    Chronicle,
+    Operator;
+
+if (typeof exports !== 'undefined') {
+  assert   = require('substance-test/assert');
+  Chronicle = require('substance-chronicle');
+  Operator = require('substance-operator');
+} else {
+  assert = root.Substance.assert;
+  Chronicle = root.Substance.Chronicle;
+  Operator = root.Substance.Operator;
+}
+
+var ArrayOperation = Operator.ArrayOperation;
 
 // Index:
 //

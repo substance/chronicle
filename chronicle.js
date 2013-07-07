@@ -1,4 +1,4 @@
-(function(root) { "use_strict";
+(function(root) { "use strict";
 
 /*jshint unused: false*/ // deactivating this, as we define abstract interfaces here
 

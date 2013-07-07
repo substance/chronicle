@@ -1,12 +1,29 @@
 (function(root) {
 
-var assert = root.Substance.assert;
-var util = root.Substance.util;
-var errors = root.Substance.errors;
-var Chronicle = root.Substance.Chronicle;
-var ObjectOperation = Chronicle.ot.ObjectOperation;
-var TextOperation = Chronicle.ot.TextOperation;
-var ArrayOperation = Chronicle.ot.ArrayOperation;
+var util,
+    errors,
+    assert,
+    Chronicle,
+    Operator;
+
+if (typeof exports !== 'undefined') {
+  util = require('substance-util');
+  errors = require('substance-util/errors');
+  assert   = require('substance-test/assert');
+  Chronicle = require('substance-chronicle');
+  Operator = require('substance-operator');
+} else {
+  util = root.Substance.util;
+  errors = root.Substance.errors;
+  assert = root.Substance.assert;
+  Chronicle = root.Substance.Chronicle;
+  Operator = root.Substance.Operator;
+}
+
+
+var ObjectOperation = Operator.ObjectOperation;
+var TextOperation = Operator.TextOperation;
+var ArrayOperation = Operator.ArrayOperation;
 
 function testTransform(a, b, input, expected) {
   var t = ObjectOperation.transform(a, b);
