@@ -20,6 +20,6 @@
     "substance-test": "https://github.com/substance/test/archive/master.tar.gz"
   },
   "scripts": {
-    "test": "mocha tests/test.js"
+    "test": "mocha -R spec tests/test.js"
   }
 }
