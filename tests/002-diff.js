@@ -1,8 +1,22 @@
 (function(root) {
 
-var assert = root.Substance.assert;
-var Chronicle = root.Substance.Chronicle;
-var ChronicleTest = root.Substance.test.ChronicleTest;
+var assert,
+    Chronicle,
+    ChronicleTest,
+    registerTest;
+
+if (typeof exports !== 'undefined') {
+  assert   = require('substance-test/assert');
+  Chronicle = require('..');
+  ChronicleTest = require('./chronicle_test');
+  registerTest = require('substance-test').registerTest;
+} else {
+  assert = root.Substance.assert;
+  Chronicle = root.Substance.Chronicle;
+  ChronicleTest = root.Substance.Chronicle.AbstractTest;
+  registerTest = root.Substance.registerTest;
+}
+
 var ROOT = Chronicle.Index.ROOT.id;
 
 var Diff = function() {
@@ -102,6 +116,6 @@ var Diff = function() {
 };
 Diff.prototype = ChronicleTest.prototype;
 
-root.Substance.registerTest(['Chronicle', 'Diff'], new Diff());
+registerTest(['Chronicle', 'Diff'], new Diff());
 
 })(this);
