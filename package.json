@@ -10,8 +10,10 @@
   "main"          : "index",
   "version"       : "0.1.0",
   "dependencies": {
-    "underscore": "1.4.x",
-    "mocha":       "1.12.0"
+    "underscore":   "1.4.x",
+    "mocha":        "1.12.0",
+    "substance-util": "git://github.com/substance/util.git#master",
+    "substance-test": "git://github.com/substance/test.git#master"
   },
   "scripts": {
     "test": "mocha tests/test.js"
