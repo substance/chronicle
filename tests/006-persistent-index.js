@@ -42,7 +42,7 @@ function PersistentIndexTest() {
 
       for (var idx = 1; idx <= 4; idx++) {
         var c = this.changes.get(idx);
-        assert.isObjectEqual({val: idx}, c.data);
+        assert.isDeepEqual({val: idx}, c.data);
       }
     },
 
