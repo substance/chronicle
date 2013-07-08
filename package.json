@@ -20,6 +20,6 @@
     "substance-operator": "https://github.com/substance/operator/archive/master.tar.gz"
   },
   "scripts": {
-    "test": "mocha -R spec tests/test.js"
+    "test": "mocha -R spec tests/tests.js"
   }
 }
