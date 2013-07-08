@@ -2,16 +2,19 @@
 
 var assert,
     Chronicle,
-    Operator;
+    Operator,
+    registerTest;
 
 if (typeof exports !== 'undefined') {
   assert   = require('substance-test/assert');
-  Chronicle = require('substance-chronicle');
+  Chronicle = require('..');
   Operator = require('substance-operator');
+  registerTest = require('substance-test').registerTest;
 } else {
   assert = root.Substance.assert;
   Chronicle = root.Substance.Chronicle;
   Operator = root.Substance.Operator;
+  registerTest = root.Substance.registerTest;
 }
 
 var ArrayOperation = Operator.ArrayOperation;
@@ -377,6 +380,6 @@ ArrayOperationTest.__prototype__ = function() {
 };
 ArrayOperationTest.prototype = new ArrayOperationTest.__prototype__();
 
-root.Substance.registerTest(['Chronicle', 'Array Operation'], new ArrayOperationTest());
+registerTest(['Chronicle', 'Array Operation'], new ArrayOperationTest());
 
 })(this);

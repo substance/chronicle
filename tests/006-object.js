@@ -4,20 +4,23 @@ var util,
     errors,
     assert,
     Chronicle,
-    Operator;
+    Operator,
+    registerTest;
 
 if (typeof exports !== 'undefined') {
   util = require('substance-util');
   errors = require('substance-util/errors');
   assert   = require('substance-test/assert');
-  Chronicle = require('substance-chronicle');
+  Chronicle = require('..');
   Operator = require('substance-operator');
+  registerTest = require('substance-test').registerTest;
 } else {
   util = root.Substance.util;
   errors = root.Substance.errors;
   assert = root.Substance.assert;
   Chronicle = root.Substance.Chronicle;
   Operator = root.Substance.Operator;
+  registerTest = root.Substance.registerTest;
 }
 
 
@@ -29,10 +32,10 @@ function testTransform(a, b, input, expected) {
   var t = ObjectOperation.transform(a, b);
 
   var output = ObjectOperation.apply(t[1], ObjectOperation.apply(a, util.clone(input)));
-  assert.isObjectEqual(expected, output);
+  assert.isDeepEqual(expected, output);
 
   output = ObjectOperation.apply(t[0], ObjectOperation.apply(b, util.clone(input)));
-  assert.isObjectEqual(expected, output);
+  assert.isDeepEqual(expected, output);
 }
 
 var ObjectOperationTest = function() {
@@ -48,7 +51,7 @@ var ObjectOperationTest = function() {
       var obj = {};
       op.apply(obj);
 
-      assert.isObjectEqual(expected, obj);
+      assert.isDeepEqual(expected, obj);
     },
 
     "Apply: create (nested)", function() {
@@ -60,7 +63,7 @@ var ObjectOperationTest = function() {
       var obj = {"a": {}};
       op.apply(obj);
 
-      assert.isObjectEqual(expected, obj);
+      assert.isDeepEqual(expected, obj);
     },
 
     "Apply: delete", function() {
@@ -72,7 +75,7 @@ var ObjectOperationTest = function() {
       var obj = {"a": "bla"};
       op.apply(obj);
 
-      assert.isObjectEqual(expected, obj);
+      assert.isDeepEqual(expected, obj);
     },
 
     "Apply: delete (nested)", function() {
@@ -84,7 +87,7 @@ var ObjectOperationTest = function() {
       var obj = { a: { b: "bla"} };
       op.apply(obj);
 
-      assert.isObjectEqual(expected, obj);
+      assert.isDeepEqual(expected, obj);
     },
 
     "Apply: delete (key error)", function() {
@@ -106,7 +109,7 @@ var ObjectOperationTest = function() {
       var obj = {a: "bla"};
       op.apply(obj);
 
-      assert.isObjectEqual(expected, obj);
+      assert.isDeepEqual(expected, obj);
     },
 
     "Apply: update (array)", function() {
@@ -118,7 +121,7 @@ var ObjectOperationTest = function() {
       var obj = {a: val.slice(0)};
       op.apply(obj);
 
-      assert.isObjectEqual(expected, obj);
+      assert.isDeepEqual(expected, obj);
     },
 
     // Conflict cases
@@ -166,15 +169,15 @@ var ObjectOperationTest = function() {
 
       t = ObjectOperation.transform(a, b);
       obj = t[1].apply(a.apply({a: "bla"}));
-      assert.isObjectEqual(expected1, obj);
+      assert.isDeepEqual(expected1, obj);
       obj = t[0].apply(b.apply({}));
-      assert.isObjectEqual(expected1, obj);
+      assert.isDeepEqual(expected1, obj);
 
       t = ObjectOperation.transform(b, a);
       obj = t[1].apply(b.apply({}));
-      assert.isObjectEqual(expected2, obj);
+      assert.isDeepEqual(expected2, obj);
       obj = t[0].apply(a.apply({a: "bla"}));
-      assert.isObjectEqual(expected2, obj);
+      assert.isDeepEqual(expected2, obj);
 
     },
 
@@ -246,15 +249,15 @@ var ObjectOperationTest = function() {
 
       var t = ObjectOperation.transform(a, b);
       var obj = t[1].apply(a.apply({}));
-      assert.isObjectEqual(expected1, obj);
+      assert.isDeepEqual(expected1, obj);
       obj = t[0].apply(b.apply({a: "bla"}));
-      assert.isObjectEqual(expected1, obj);
+      assert.isDeepEqual(expected1, obj);
 
       t = ObjectOperation.transform(b, a);
       obj = t[1].apply(b.apply({a: "bla"}));
-      assert.isObjectEqual(expected2, obj);
+      assert.isDeepEqual(expected2, obj);
       obj = t[0].apply(a.apply({}));
-      assert.isObjectEqual(expected2, obj);
+      assert.isDeepEqual(expected2, obj);
     },
 
     "Transformation: update/set (conflict)", function() {
@@ -313,7 +316,6 @@ ObjectOperationTest.__prototype__ = function() {
 };
 ObjectOperationTest.prototype = new ObjectOperationTest.__prototype__();
 
-
-root.Substance.registerTest(['Chronicle', 'Object Operation'], new ObjectOperationTest());
+registerTest(['Chronicle', 'Object Operation'], new ObjectOperationTest());
 
 })(this);

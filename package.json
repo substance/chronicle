@@ -17,7 +17,8 @@
     "underscore":   "1.4.x",
     "mocha":        "1.12.0",
     "substance-util": "https://github.com/substance/util/archive/master.tar.gz",
-    "substance-test": "https://github.com/substance/test/archive/master.tar.gz"
+    "substance-test": "https://github.com/substance/test/archive/master.tar.gz",
+    "substance-operator": "https://github.com/substance/operator/archive/master.tar.gz"
   },
   "scripts": {
     "test": "mocha -R spec tests/test.js"

@@ -1,8 +1,26 @@
 (function(root) {
 
-var assert = root.Substance.assert;
-var Chronicle = root.Substance.Chronicle;
-var TextOperation = Chronicle.ot.TextOperation;
+var assert,
+    errors,
+    Chronicle,
+    TextOperation,
+    registerTest;
+
+if (typeof exports !== 'undefined') {
+  assert   = require('substance-test/assert');
+  errors   = require('substance-util/errors');
+  Chronicle = require('..');
+  TextOperation = require('substance-operator').TextOperation;
+  registerTest = require('substance-test').registerTest;
+} else {
+  assert = root.Substance.assert;
+  errors   = root.Substance.errors;
+  Chronicle = root.Substance.Chronicle;
+  TextOperation = root.Substance.Operator.TextOperation;
+  registerTest = root.Substance.registerTest;
+}
+
+
 
 var TEXT1 = "Lorem amet";
 var TEXT2 = "Lorem ipsum amet";
@@ -150,7 +168,7 @@ var TextOperationTest = function() {
     "Merge (simple)", function() {
       this.chronicle.open(this.ID2);
       // This should fail due to a conflict
-      assert.exception(Chronicle.MergeConflict, function() {
+      assert.exception(errors.MergeConflict, function() {
         this.chronicle.merge(this.ID5_1, "manual", {sequence: [this.ID2, this.ID5_1]});
       }, this);
 
@@ -230,6 +248,6 @@ TestDocument = function(chronicle) {
 
 };
 
-root.Substance.registerTest(['Chronicle', 'Text Operation'], new TextOperationTest());
+registerTest(['Chronicle', 'Text Operation'], new TextOperationTest());
 
 })(this);
