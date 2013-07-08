@@ -1,10 +1,14 @@
 {
-  "name"          : "chronicle",
+  "name"          : "substance-chronicle",
   "description"   : "A Javascript versioning library.",
   "url"           : "http://github.com/substance/chronicle/",
   "keywords"      : ["substance", "versioning"],
   "author"        : "Oliver Buchtala",
-  "contributors"  : [],
+  "contributors"  : ["Michael Aufreiter"],
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/substance/chronicle.git"
+  },
   "dependencies"  : ["underscore"],
   "lib"           : ".",
   "main"          : "index",
