@@ -1,4 +1,4 @@
-Chronicle
+Chronicle [![Build Status](https://travis-ci.org/substance/chronicle.png)](https://travis-ci.org/substance/chronicle)
 =========
 
 A git inspired versioning API based on Operational Transformations (OT).
