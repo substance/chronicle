@@ -1,23 +1,25 @@
 {
   "name"          : "substance-chronicle",
-  "description"   : "A Javascript versioning library.",
+  "description"   : "A Javascript versioning library inspired by Git.",
   "url"           : "http://github.com/substance/chronicle/",
   "keywords"      : ["substance", "versioning"],
   "author"        : "Oliver Buchtala",
   "contributors"  : ["Michael Aufreiter"],
   "repository": {
-      "type": "git",
-      "url": "https://github.com/substance/chronicle.git"
+    "type": "git",
+    "url": "https://github.com/substance/chronicle.git"
   },
-  "lib"           : ".",
-  "main"          : "index",
-  "version"       : "0.1.0",
+  "main": "index",
+  "version": "0.1.0",
   "dependencies": {
-    "underscore":   "1.4.x",
-    "mocha":        "1.12.x",
-    "substance-util": "https://github.com/substance/util/archive/master.tar.gz",
-    "substance-test": "https://github.com/substance/test/archive/master.tar.gz",
-    "substance-operator": "https://github.com/substance/operator/archive/master.tar.gz"
+    "underscore": "1.5.x",
+    "mocha": "1.12.x",
+    "substance-util": "0.1.0",
+    "substance-test": "0.1.0",
+    "substance-operator": "0.1.0"
+  },
+  "engines": {
+    "node": "0.8.x"
   },
   "scripts": {
     "test": "mocha -R spec tests/tests.js"
