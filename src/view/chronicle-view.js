@@ -9,24 +9,24 @@ var inhibitMove = function(graph) {
 
   var __move__ = graph.move;
   var minx = -100,
-      maxx = 100,
+      maxx = 600,
       miny = -100,
-      maxy = 300;
+      maxy = 50;
   graph.move = function(node, onComplete) {
     var x = node.endPos.x;
     var y = node.endPos.y;
-    
+
     // Note: to inhibit the move we have to the negative of node.endPos
     // and overwrite onComplete.Move
     // Additionally, we compute an ALAP move (As Lazy As Possible ;) )
     var movx = -x, movy = -y;
-    if (x > maxx) movx += x - maxx;  
-    if (x < minx) movx -= minx - x;  
-    if (y > maxy) movy += y - maxy;  
+    if (x > maxx) movx += x - maxx;
+    if (x < minx) movx -= minx - x;
+    if (y > maxy) movy += y - maxy;
     if (y < miny) movy -= miny - y;
     onComplete.Move.offsetX = movx;
     onComplete.Move.offsetY = movy;
-    
+
     __move__.call(graph, node, onComplete);
   };
 };
@@ -37,22 +37,22 @@ var ChronicleView = function(controller, options) {
   this.controller = controller;
 
   var jitOptions = {
-    
+
     // create from top to down
-    orientation: "top" || options.orientation,
-    
+    orientation: "left" || options.orientation,
+
     // do not collapse unselected branches
     constrained: false,
-    
+
     // container element id
     injectInto: 'chronicle',
-    
+
     //animation duration
     duration: 100,
-    
+
     //transition type
     transition: $jit.Trans.Back.easeInOut,
-    
+
     //distance between node and its children
     levelDistance: 20,
 
@@ -81,7 +81,7 @@ var ChronicleView = function(controller, options) {
   //Use this method to add event handlers and styles to
   //your node.
   jitOptions.onCreateLabel = function(label, node){
-    label.id = node.id;            
+    label.id = node.id;
     label.innerHTML = node.name;
     label.onclick = function(){
       self.controller.open(node.id);
@@ -118,7 +118,7 @@ var ChronicleView = function(controller, options) {
       id: "ROOT",
       name: "ROOT",
       data: {},
-      children: []    
+      children: []
   });
   this.tree.main_node = "ROOT";
   //need to emulate a click on the root node to initialize the graph correctly.
@@ -128,10 +128,6 @@ var ChronicleView = function(controller, options) {
 
   //compute node positions and layout
   this.tree.compute();
-
-  // TODO: generalize
-//  var pos = {x: 0, y: -100};
-//  this.tree.geom.translate(pos, "end");
 
   this.silent = false;
 };
@@ -160,17 +156,31 @@ ChronicleView.__prototype__ = function() {
 
     if (change.id === "ROOT") return;
 
-    var parent = this.tree.graph.getNode(change.parent);
+    // do not show hidden nodes
+    if (change.type === "transformed") return;
 
+    var label;
+    if (this.getLabel) label = this.getLabel(change);
+    else label = change.id.substring(0,4);
     var newNode = {
       id: change.id,
-      name: change.id.substring(0,4),
+      name: label,
       data: change,
       children: []
     };
 
     this.tree.graph.addNode(newNode);
-    this.tree.graph.addAdjacence(parent, newNode);
+
+    var parent;
+    if (change.type === "merge") {
+      for (var idx = 0; idx < change.branches.length; idx++) {
+        parent = this.tree.graph.getNode(change.branches[idx]);
+        this.tree.graph.addAdjacence(parent, newNode);
+      }
+    } else {
+      parent = this.tree.graph.getNode(change.parent);
+      this.tree.graph.addAdjacence(parent, newNode);
+    }
 
     if (!silent) {
       this.tree.refresh();

@@ -17,9 +17,9 @@ var ChronicleController = function(chronicle) {
     self.trigger("index:setRef", name, ref);
   };
 
-  var __reset__ = chronicle.open;
-  chronicle.reset = function(id) {
-    __reset__.call(chronicle, id);
+  var __reset__ = chronicle.reset;
+  chronicle.reset = function(id, index) {
+    __reset__.call(chronicle, id, index);
     self.trigger("chronicle:open", id);
   };
 
