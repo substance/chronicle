@@ -28,6 +28,8 @@ errors.define("ChangeError", -1);
 
 var Change = function(id, parent, data) {
 
+  this.type = 'change';
+
   if (!id) {
     throw new errors.ChangeError("Every change needs a unique id.");
   }
@@ -55,6 +57,7 @@ Change.prototype = {
 
   toJSON: function() {
     return {
+      type: this.type,
       id: this.id,
       parent: this.parent,
       data: this.data
@@ -100,6 +103,8 @@ ROOT_NODE.parent = ROOT;
 
 var Merge = function(id, main, branches) {
   Change.call(this, id, main);
+  this.type = Merge.TYPE;
+
   if (!branches) {
     throw new errors.ChangeError("Missing branches.");
   }
@@ -135,7 +140,7 @@ Merge.fromJSON = function(data) {
 // this type is introduced.
 var Transformed = function(id, parent, data, original) {
   Change.call(this, id, parent, data);
-
+  this.type = Transformed.TYPE;
   this.original = original;
 };
 

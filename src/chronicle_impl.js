@@ -30,6 +30,7 @@ ChronicleImpl.__prototype__ = function() {
   var ROOT = Chronicle.Index.ROOT.id;
 
   this.uuid = util.uuid;
+  this.internal_uuid = util.uuid;
 
   this.record = function(changeData) {
     // Sanity check: the change should have been applied already.
@@ -328,7 +329,7 @@ ChronicleImpl.__private__ = function() {
     var inverted, rebased;
 
     // attach the inversion of the first to the first node
-    inverted = new Chronicle.Change(this.uuid(), del, this.versioned.invert(left.data));
+    inverted = new Chronicle.Change(this.internal_uuid(), del, this.versioned.invert(left.data));
     index.add(inverted);
 
     // rebase onto the inverted change
@@ -412,7 +413,7 @@ ChronicleImpl.__private__ = function() {
 
         // add a change the with the rebased/transformed operation
         var orig = (source instanceof Chronicle.Transformed) ? source.original : source.id;
-        b_i = new Chronicle.Transformed(this.uuid(), targetId, transformed[1], orig);
+        b_i = new Chronicle.Transformed(this.internal_uuid(), targetId, transformed[1], orig);
 
         // overwrite the mapping for the original
         mapping[orig] = b_i.id;
