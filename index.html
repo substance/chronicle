@@ -15,31 +15,40 @@
 <script language="javascript" type="text/javascript" src="src/chronicle_impl.js"></script>
 <script language="javascript" type="text/javascript" src="src/chronicle_index_impl.js"></script>
 <script language="javascript" type="text/javascript" src="src/adapter/text.js"></script>
-<script language="javascript" type="text/javascript" src="src/control/chronicle-controller.js"></script>
-<script language="javascript" type="text/javascript" src="src/view/chronicle-view.js"></script>
+<script language="javascript" type="text/javascript" src="lib/controllers/chronicle-controller.js"></script>
+<script language="javascript" type="text/javascript" src="lib/views/chronicle-view.js"></script>
 <style>
-
+  body {
+    font-family: 'Open Sans';
+    font-size: 13px;
+    background: #F0F1EB;
+    -webkit-font-smoothing: antialiased;
+  }
   #chronicle-demo {
-      position:relative;
-      width:600px;
+    position:relative;
+    overflow: auto;
+    width:600px;
     }
   #chronicle {
-      float:left;
-      width:300px;
-      height:300px;
-      margin:auto;
-      overflow:hidden;
+    float:left;
+    width:300px;
+    height:300px;
+    margin:auto;
+    overflow:hidden;
   }
 
   #chronicle-label .node {
-      text-align: center;
-      cursor: pointer;
+    text-align: center;
+    cursor: pointer;
   }
 
   #textpanel {
-      float:left;
-      width:200px;
-      margin:auto;
+    font-size: 18px;
+    float:right;
+    width:300px;
+    color: #444;
+    margin:auto;
+    margin-top: 20px;
   }
 
 </style>
