@@ -1,0 +1,129 @@
+<html>
+<head>
+<title>Chronicle Demo</title>
+
+<script language="javascript" type="text/javascript" src="lib/underscore.js"></script>
+<script language="javascript" type="text/javascript" src="lib/jquery.min.js"></script>
+<script language="javascript" type="text/javascript" src="lib/jit.js"></script>
+
+<script language="javascript" type="text/javascript" src="node_modules/substance-util/util.js"></script>
+<script language="javascript" type="text/javascript" src="node_modules/substance-util/errors.js"></script>
+<script language="javascript" type="text/javascript" src="node_modules/substance-operator/src/operation.js"></script>
+<script language="javascript" type="text/javascript" src="node_modules/substance-operator/src/compound.js"></script>
+<script language="javascript" type="text/javascript" src="node_modules/substance-operator/src/text_operation.js"></script>
+<script language="javascript" type="text/javascript" src="src/chronicle.js"></script>
+<script language="javascript" type="text/javascript" src="src/chronicle_impl.js"></script>
+<script language="javascript" type="text/javascript" src="src/chronicle_index_impl.js"></script>
+<script language="javascript" type="text/javascript" src="src/adapter/text.js"></script>
+<script language="javascript" type="text/javascript" src="src/control/chronicle-controller.js"></script>
+<script language="javascript" type="text/javascript" src="src/view/chronicle-view.js"></script>
+<style>
+
+  #chronicle-demo {
+      position:relative;
+      width:600px;
+    }
+  #chronicle {
+      float:left;
+      width:300px;
+      height:300px;
+      margin:auto;
+      overflow:hidden;
+  }
+
+  #chronicle-label .node {
+      text-align: center;
+      cursor: pointer;
+  }
+
+  #textpanel {
+      float:left;
+      width:200px;
+      margin:auto;
+  }
+
+</style>
+<script language="javascript">
+  (function(root) {
+  
+    var Chronicle = root.Substance.Chronicle;
+    var ChronicleController = root.Substance.ChronicleController;
+
+    var SimpleTextDocument = function(chronicle, sel) {
+      this.$el = $(sel);
+
+      this.chronicle = chronicle;
+      chronicle.manage(new Chronicle.TextOperationAdapter(chronicle, this));
+
+      this.setText = function(text) {
+        this.$el.text(text);
+      };
+
+      this.getText = function() {
+        var text = this.$el.text();
+        return text;
+      };
+
+      this.apply = function(op) {
+        var text = this.getText();
+        this.setText(op.apply(text));
+        return this.chronicle.record(op);
+      };
+
+      this.setText("");
+    };
+
+    var Session = function() {
+      var chronicle = Chronicle.create({mode: Chronicle.HYSTERICAL});
+      this.chronicle = new ChronicleController(chronicle);
+      this.document = new SimpleTextDocument(chronicle, "#textpanel");
+    };
+
+    root.Session = Session;
+
+  })(this);
+
+  var OP1 = Substance.Operator.TextOperation.Insert(0, "Lorem amet");
+  var OP2 = Substance.Operator.TextOperation.Insert(5, " ipsum");
+  var OP3 = Substance.Operator.TextOperation.Insert(12, "dolor ");
+  var OP4 = Substance.Operator.TextOperation.Insert(18, "sit ");
+
+  var OP5_1 = Substance.Operator.TextOperation.Insert(5, " sit");
+  var OP5_2 = Substance.Operator.TextOperation.Insert(6, "sit ");
+
+  var fixture = function() {
+    var view = window.chronicleView;
+    view.silent = true;
+    var session = window.session;
+    var id1 = session.document.apply(OP1);
+    session.document.apply(OP2);
+    session.document.apply(OP3);
+    var id4 = session.document.apply(OP4);
+    session.chronicle.open(id1);
+    session.document.apply(OP5_1);
+    session.chronicle.open(id1);
+    session.document.apply(OP5_2);
+    session.chronicle.open(id4);
+
+    view.silent = false;
+    view.tree.refresh();
+  };
+
+  function init() {
+    window.session = new Session();
+    window.chronicleView = new ChronicleView(window.session.chronicle);
+
+    fixture();
+  }
+
+</script>
+
+</head>
+
+<body onload="init();">
+  <div id="chronicle-demo">
+    <div id="textpanel"></div>
+    <div id="chronicle"></div>
+  </div>
+</body>
+</html>
