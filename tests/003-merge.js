@@ -9,12 +9,12 @@ if (typeof exports !== 'undefined') {
   assert   = require('substance-test/assert');
   Chronicle = require('..');
   ChronicleTest = require('./chronicle_test');
-  registerTest = require('substance-test').registerTest;
+  registerTest = require('substance-test').Test.registerTest;
 } else {
   assert = root.Substance.assert;
   Chronicle = root.Substance.Chronicle;
   ChronicleTest = root.Substance.Chronicle.AbstractTest;
-  registerTest = root.Substance.registerTest;
+  registerTest = root.Substance.Test.registerTest;
 }
 
 var ROOT = Chronicle.Index.ROOT.id;

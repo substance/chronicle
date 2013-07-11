@@ -9,12 +9,12 @@ if (typeof exports !== 'undefined') {
   assert   = require('substance-test/assert');
   Chronicle = require('..');
   MemoryStore = require('substance-store').MemoryStore;
-  registerTest = require('substance-test').registerTest;
+  registerTest = require('substance-test').Test.registerTest;
 } else {
   assert = root.Substance.assert;
   Chronicle = root.Substance.Chronicle;
   MemoryStore = root.Substance.MemoryStore;
-  registerTest = root.Substance.registerTest;
+  registerTest = root.Substance.Test.registerTest;
 }
 
 var Change = Chronicle.Change;

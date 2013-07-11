@@ -9,12 +9,12 @@ if (typeof exports !== 'undefined') {
   assert   = require('substance-test/assert');
   Chronicle = require('..');
   Operator = require('substance-operator');
-  registerTest = require('substance-test').registerTest;
+  registerTest = require('substance-test').Test.registerTest;
 } else {
   assert = root.Substance.assert;
   Chronicle = root.Substance.Chronicle;
   Operator = root.Substance.Operator;
-  registerTest = root.Substance.registerTest;
+  registerTest = root.Substance.Test.registerTest;
 }
 
 var ArrayOperation = Operator.ArrayOperation;

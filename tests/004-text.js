@@ -11,13 +11,13 @@ if (typeof exports !== 'undefined') {
   errors   = require('substance-util/errors');
   Chronicle = require('..');
   TextOperation = require('substance-operator').TextOperation;
-  registerTest = require('substance-test').registerTest;
+  registerTest = require('substance-test').Test.registerTest;
 } else {
   assert = root.Substance.assert;
   errors   = root.Substance.errors;
   Chronicle = root.Substance.Chronicle;
   TextOperation = root.Substance.Operator.TextOperation;
-  registerTest = root.Substance.registerTest;
+  registerTest = root.Substance.Test.registerTest;
 }
 
 var TEXT1 = "Lorem amet";
