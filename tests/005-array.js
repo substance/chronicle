@@ -14,7 +14,7 @@ if (typeof exports !== 'undefined') {
   assert = root.Substance.assert;
   Chronicle = root.Substance.Chronicle;
   Operator = root.Substance.Operator;
-  registerTest = root.Substance.registerTest;
+  registerTest = root.Substance.Test.registerTest;
 }
 
 var ArrayOperation = Operator.ArrayOperation;

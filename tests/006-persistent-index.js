@@ -14,7 +14,7 @@ if (typeof exports !== 'undefined') {
   assert = root.Substance.assert;
   Chronicle = root.Substance.Chronicle;
   MemoryStore = root.Substance.MemoryStore;
-  registerTest = root.Substance.registerTest;
+  registerTest = root.Substance.Test.registerTest;
 }
 
 var Change = Chronicle.Change;

@@ -17,7 +17,7 @@ if (typeof exports !== 'undefined') {
   errors   = root.Substance.errors;
   Chronicle = root.Substance.Chronicle;
   TextOperation = root.Substance.Operator.TextOperation;
-  registerTest = root.Substance.registerTest;
+  registerTest = root.Substance.Test.registerTest;
 }
 
 var TEXT1 = "Lorem amet";

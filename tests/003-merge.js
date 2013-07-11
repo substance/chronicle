@@ -14,7 +14,7 @@ if (typeof exports !== 'undefined') {
   assert = root.Substance.assert;
   Chronicle = root.Substance.Chronicle;
   ChronicleTest = root.Substance.Chronicle.AbstractTest;
-  registerTest = root.Substance.registerTest;
+  registerTest = root.Substance.Test.registerTest;
 }
 
 var ROOT = Chronicle.Index.ROOT.id;
@@ -128,6 +128,7 @@ var Merge = function() {
   ];
 };
 Merge.prototype = ChronicleTest.prototype;
+
 
 registerTest(['Chronicle', 'Merge'], new Merge());
 
