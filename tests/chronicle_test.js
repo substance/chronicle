@@ -1,18 +1,15 @@
-(function(root) {
+"use strict";
 
-var _,
-    Chronicle,
-    Calculator;
+// Import
+// =========
 
-if (typeof exports !== 'undefined') {
-  _    = require('underscore');
-  Chronicle = require('..');
-  Calculator = require('./example');
-} else {
-  _ = root._;
-  Chronicle = root.Substance.Chronicle;
-  Calculator = root.Substance.Chronicle.Calculator;
-}
+var _ = require('underscore');
+var Chronicle = require('../index');
+var Calculator = require('./example');
+
+
+// Test
+// =========
 
 var __ID__ = 0;
 var __OP__ = 1;
@@ -100,11 +97,4 @@ var ChronicleTest = function() {
 // Export
 // ====
 
-if (typeof exports === 'undefined') {
-  root.Substance.Chronicle.AbstractTest = ChronicleTest;
-} else {
-  module.exports = ChronicleTest;
-}
-
-
-})(this);
+module.exports = ChronicleTest;

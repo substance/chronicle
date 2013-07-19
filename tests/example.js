@@ -1,19 +1,11 @@
-(function(root) { "use strict";
+"use strict";
 
-// Imports
-// ====
+// Import
+// =========
 
-var _, util, Chronicle;
-
-if (typeof exports !== 'undefined') {
-  _   = require('underscore');
-  util   = require('substance-util');
-  Chronicle = require('..');
-} else {
-  _ = root._;
-  util = root.Substance.util;
-  Chronicle = root.Substance.Chronicle;
-}
+var _ = require('underscore');
+var Chronicle = require('../index');
+var util = require('substance-util');
 
 // Module
 // ====
@@ -130,10 +122,4 @@ Calculator.ChronicleAdapter = ChronicleAdapter;
 // Export
 // ====
 
-if (typeof exports === 'undefined') {
-  root.Substance.Chronicle.Calculator = Calculator;
-} else {
-  module.exports = Calculator;
-}
-
-})(this);
+module.exports = Calculator;

@@ -6,7 +6,7 @@
 var Test = require('substance-test');
 var assert = Test.assert;
 var registerTest = Test.registerTest;
-var Chronicle = require('..');
+var Chronicle = require('../index');
 var MemoryStore = require('substance-store').MemoryStore;
 var Change = Chronicle.Change;
 
