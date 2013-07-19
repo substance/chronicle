@@ -1,23 +1,18 @@
-(function(root) {
+"use strict";
 
-var assert,
-    Chronicle,
-    MemoryStore,
-    registerTest;
+// Import
+// ========
 
-if (typeof exports !== 'undefined') {
-  assert   = require('substance-test/assert');
-  Chronicle = require('..');
-  MemoryStore = require('substance-store').MemoryStore;
-  registerTest = require('substance-test').Test.registerTest;
-} else {
-  assert = root.Substance.assert;
-  Chronicle = root.Substance.Chronicle;
-  MemoryStore = root.Substance.MemoryStore;
-  registerTest = root.Substance.Test.registerTest;
-}
-
+var substance_test = require('substance-test');
+var assert = substance_test.assert;
+var registerTest = substance_test.registerTest;
+var Chronicle = require('..');
+var MemoryStore = require('substance-store').MemoryStore;
 var Change = Chronicle.Change;
+
+
+// Test
+// ========
 
 function PersistentIndexTest() {
 
@@ -76,5 +71,3 @@ function PersistentIndexTest() {
 }
 
 registerTest(['Chronicle', 'Persistent Index'], new PersistentIndexTest());
-
-})(this);

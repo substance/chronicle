@@ -1,21 +1,12 @@
-(function(root) { "use strict";
+"use strict";
 
 // Imports
 // ====
 
-var util, errors, _, Chronicle;
-
-if (typeof exports !== 'undefined') {
-  _   = require('underscore');
-  util   = require('substance-util');
-  errors   = require('substance-util/errors');
-  Chronicle = require('./chronicle');
-} else {
-  _ = root._;
-  util = root.Substance.util;
-  errors = root.Substance.errors;
-  Chronicle = root.Substance.Chronicle;
-}
+var _ = require('underscore');
+var util = require('substance-util');
+var errors = util.errors;
+var Chronicle = require('./chronicle');
 
 // Module
 // ====
@@ -446,7 +437,8 @@ var makePersistent = function(index, store) {
 };
 
 // Export
-// ====
+// ========
+
 
 Chronicle.Diff.create = function(id, reverts, applies) {
   return new DiffImpl([reverts.length, [id].concat(reverts).concat(applies)]);
@@ -464,5 +456,3 @@ Chronicle.Index.create = function(options) {
 };
 
 Chronicle.TmpIndex = TmpIndex;
-
-})(this);

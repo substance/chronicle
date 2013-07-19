@@ -1,21 +1,12 @@
-(function(root) { "use strict";
+"use strict";
 
 // Imports
 // ====
 
-var util, errors, _, Chronicle;
-
-if (typeof exports !== 'undefined') {
-  _   = require('underscore');
-  util   = require('substance-util');
-  errors   = require('substance-util/errors');
-  Chronicle = require('./chronicle');
-} else {
-  _ = root._;
-  util = root.Substance.util;
-  errors = root.Substance.errors;
-  Chronicle = root.Substance.Chronicle;
-}
+var _ = require('underscore');
+var util = require('substance-util');
+var errors = util.errors;
+var Chronicle = require('./chronicle');
 
 // Module
 // ====
@@ -614,14 +605,11 @@ ChronicleImpl.__private__ = function() {
 ChronicleImpl.__prototype__.prototype = Chronicle.prototype;
 ChronicleImpl.prototype = new ChronicleImpl.__prototype__();
 
-// Export
-// ========
-//
+// Note: this class is not exported directly
+// instead it registers a global factory
 
 Chronicle.create = function(options) {
   options = options || {};
   var index = Chronicle.Index.create(options);
   return new ChronicleImpl(index, options);
 };
-
-})(this);

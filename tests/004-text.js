@@ -1,24 +1,19 @@
-(function(root) {
+"use strict";
 
-var assert,
-    errors,
-    Chronicle,
-    TextOperation,
-    registerTest;
+// Import
+// ========
 
-if (typeof exports !== 'undefined') {
-  assert   = require('substance-test/assert');
-  errors   = require('substance-util/errors');
-  Chronicle = require('..');
-  TextOperation = require('substance-operator').TextOperation;
-  registerTest = require('substance-test').Test.registerTest;
-} else {
-  assert = root.Substance.assert;
-  errors   = root.Substance.errors;
-  Chronicle = root.Substance.Chronicle;
-  TextOperation = root.Substance.Operator.TextOperation;
-  registerTest = root.Substance.Test.registerTest;
-}
+var util = require('substance-util');
+var errors = util.errors;
+var substance_test = require('substance-test');
+var assert = substance_test.assert;
+var registerTest = substance_test.registerTest;
+var Chronicle = require('..');
+var TextOperation = require('substance-operator').TextOperation;
+
+
+// Test
+// ========
 
 var TEXT1 = "Lorem amet";
 var TEXT2 = "Lorem ipsum amet";
@@ -137,5 +132,3 @@ TestDocument = function(chronicle) {
 };
 
 registerTest(['Chronicle', 'Text Operation'], new ChronicledTextTest());
-
-})(this);

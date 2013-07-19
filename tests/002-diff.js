@@ -1,21 +1,17 @@
-(function(root) {
+"use strict";
 
-var assert,
-    Chronicle,
-    ChronicleTest,
-    registerTest;
+// Import
+// ========
 
-if (typeof exports !== 'undefined') {
-  assert   = require('substance-test/assert');
-  Chronicle = require('..');
-  ChronicleTest = require('./chronicle_test');
-  registerTest = require('substance-test').Test.registerTest;
-} else {
-  assert = root.Substance.assert;
-  Chronicle = root.Substance.Chronicle;
-  ChronicleTest = root.Substance.Chronicle.AbstractTest;
-  registerTest = root.Substance.Test.registerTest;
-}
+var substance_test = require('substance-test');
+var assert = substance_test.assert;
+var registerTest = substance_test.registerTest;
+var Chronicle = require('..');
+var ChronicleTest = require("./chronicle_test");
+
+
+// Test
+// ========
 
 var ROOT = Chronicle.Index.ROOT.id;
 
@@ -117,5 +113,3 @@ var Diff = function() {
 Diff.prototype = ChronicleTest.prototype;
 
 registerTest(['Chronicle', 'Diff'], new Diff());
-
-})(this);

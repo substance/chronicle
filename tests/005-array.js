@@ -1,23 +1,18 @@
-(function(root) {
+"use strict";
 
-var assert,
-    Chronicle,
-    Operator,
-    registerTest;
+// Import
+// ========
 
-if (typeof exports !== 'undefined') {
-  assert   = require('substance-test/assert');
-  Chronicle = require('..');
-  Operator = require('substance-operator');
-  registerTest = require('substance-test').Test.registerTest;
-} else {
-  assert = root.Substance.assert;
-  Chronicle = root.Substance.Chronicle;
-  Operator = root.Substance.Operator;
-  registerTest = root.Substance.Test.registerTest;
-}
-
+var substance_test = require('substance-test');
+var assert = substance_test.assert;
+var registerTest = substance_test.registerTest;
+var Chronicle = require('..');
+var Operator = require('substance-operator');
 var ArrayOperation = Operator.ArrayOperation;
+
+
+// Test
+// =======
 
 // Index:
 //
@@ -119,5 +114,3 @@ var ChronicledArrayTest = function() {
 };
 
 registerTest(['Chronicle', 'Array Operation'], new ChronicledArrayTest());
-
-})(this);

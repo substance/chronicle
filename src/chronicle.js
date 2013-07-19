@@ -1,18 +1,10 @@
-(function(root) { "use strict";
+"use strict";
 
 /*jshint unused: false*/ // deactivating this, as we define abstract interfaces here
 
-var util, errors, _;
-
-if (typeof exports !== 'undefined') {
-  _   = require('underscore');
-  util   = require('substance-util');
-  errors   = require('substance-util/errors');
-} else {
-  _ = root._;
-  util = root.Substance.util;
-  errors = root.Substance.errors;
-}
+var _ = require('underscore');
+var util = require('substance-util');
+var errors = util.errors;
 
 errors.define("ChronicleError", -1);
 errors.define("ChangeError", -1);
@@ -687,10 +679,4 @@ Chronicle.mergeConflict = function(a, b) {
   return conflict;
 };
 
-if (typeof exports === 'undefined') {
-  root.Substance.Chronicle = Chronicle;
-} else {
-  module.exports = Chronicle;
-}
-
-})(this);
+module.exports = Chronicle;

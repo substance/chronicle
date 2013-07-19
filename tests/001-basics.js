@@ -1,27 +1,21 @@
-(function(root) { "use strict";
+"use strict";
 
-var _,
-    errors,
-    assert,
-    Chronicle,
-    ChronicleTest,
-    registerTest;
 
-if (typeof exports !== 'undefined') {
-  _    = require('underscore');
-  errors   = require('substance-util/errors');
-  assert   = require('substance-test/assert');
-  Chronicle = require('..');
-  ChronicleTest = require('./chronicle_test');
-  registerTest = require('substance-test').Test.registerTest;
-} else {
-  _ = root._;
-  errors = root.Substance.errors;
-  assert = root.Substance.assert;
-  Chronicle = root.Substance.Chronicle;
-  ChronicleTest = root.Substance.Chronicle.AbstractTest;
-  registerTest = root.Substance.Test.registerTest;
-}
+// Import
+// ========
+
+var _ = require('underscore');
+var util = require('substance-util');
+var errors = util.errors;
+var substance_test = require('substance-test');
+var assert = substance_test.assert;
+var registerTest = substance_test.registerTest;
+var Chronicle = require('..');
+var ChronicleTest = require("./chronicle_test");
+
+
+// Test
+// ========
 
 var ROOT = Chronicle.ROOT;
 
@@ -175,9 +169,6 @@ var Basics = function() {
 
   ];
 };
-
 Basics.prototype = ChronicleTest.prototype;
 
 registerTest(['Chronicle', 'Basics'], new Basics());
-
-})(this);
