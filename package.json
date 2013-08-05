@@ -1,30 +1,35 @@
 {
-  "name"          : "substance-chronicle",
-  "description"   : "A Javascript versioning library inspired by Git.",
-  "url"           : "http://github.com/substance/chronicle/",
-  "keywords"      : ["substance", "versioning"],
-  "author"        : "Oliver Buchtala",
-  "contributors"  : ["Michael Aufreiter"],
+  "name": "substance-chronicle",
+  "description": "A Javascript versioning library inspired by Git.",
+  "url": "http://github.com/substance/chronicle/",
+  "keywords": [
+    "substance",
+    "versioning"
+  ],
+  "author": "Oliver Buchtala",
+  "contributors": [
+    "Michael Aufreiter"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/substance/chronicle.git"
   },
-  "main": "index",
-  "version": "0.2.0-alpha",
   "dependencies": {
     "underscore": "1.5.x",
-    "mocha": "1.12.x",
-    "substance-util": "git+https://github.com/substance/util.git#master",
-    "substance-operator": "git+https://github.com/substance/operator.git#master",
-    "substance-store": "git+https://github.com/substance/store.git#master"
+    "substance-util": "git+https://github.com/substance/util.git#0.2.1",
+    "substance-operator": "git+https://github.com/substance/operator.git#0.2.1",
+    "substance-store": "git+https://github.com/substance/store.git#0.2.1"
   },
   "devDependencies": {
-    "substance-test": "git+https://github.com/substance/test.git#master"
-  },
-  "engines": {
-    "node": ">=0.8.x"
+    "mocha": "1.12.x",
+    "substance-test": "git+https://github.com/substance/test.git#0.2.1"
   },
   "scripts": {
     "test": "mocha -R spec tests/run.js"
+  },
+  "version": "0.2.1",
+  "engines": {
+    "node": ">=0.8.x",
+    "npm": ">=1.1.x"
   }
 }
