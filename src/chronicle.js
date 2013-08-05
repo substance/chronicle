@@ -348,7 +348,7 @@ Chronicle.__prototype__ = function() {
       var next = path.shift();
       if (next) this.step(next);
     } else {
-      throw new errors.ChronicleError("Hit branching joint: do not know which way to forward");
+      this.step(children[children.length-1]);
     }
   };
 
