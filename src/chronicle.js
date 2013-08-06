@@ -420,6 +420,8 @@ Chronicle.__prototype__ = function() {
     _.each(path, function(id) {
       changes.push(this.index.get(id));
     }, this);
+
+    return changes;
   };
 
 };
