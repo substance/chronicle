@@ -1,18 +1,8 @@
-(function(root) {
+"use strict";
 
-var util,
-    Chronicle,
-    ArrayOperation;
-
-if (typeof exports !== 'undefined') {
-  util   = require('substance-util');
-  Chronicle = require('../chronicle');
-  ArrayOperation = require('substance-operator').ArrayOperation;
-} else {
-  util = root.Substance.util;
-  Chronicle = root.Substance.Chronicle;
-  ArrayOperation = root.Substance.Operator.ArrayOperation;
-}
+var util = require('substance-util');
+var Chronicle = require('./chronicle');
+var ArrayOperation = require('substance-operator').ArrayOperation;
 
 var ArrayOperationAdapter = function(chronicle, array) {
   Chronicle.Versioned.call(this, chronicle);
@@ -47,6 +37,4 @@ ArrayOperationAdapter.__prototype__ = function() {
 ArrayOperationAdapter.__prototype__.prototype = Chronicle.Versioned.prototype;
 ArrayOperationAdapter.prototype = new ArrayOperationAdapter.__prototype__();
 
-Chronicle.ArrayOperationAdapter = ArrayOperationAdapter;
-
-})(this);
+module.exports = ArrayOperationAdapter;

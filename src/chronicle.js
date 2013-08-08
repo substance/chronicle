@@ -281,6 +281,7 @@ Diff.create = function(reverts, applies) {
 //
 
 var Chronicle = function(index, options) {
+  options = options || {};
 
   // an instance implementing the 'Index' interface
   this.index = index;

@@ -605,11 +605,10 @@ ChronicleImpl.__private__ = function() {
 ChronicleImpl.__prototype__.prototype = Chronicle.prototype;
 ChronicleImpl.prototype = new ChronicleImpl.__prototype__();
 
-// Note: this class is not exported directly
-// instead it registers a global factory
-
-Chronicle.create = function(options) {
+ChronicleImpl.create = function(options) {
   options = options || {};
   var index = Chronicle.Index.create(options);
   return new ChronicleImpl(index, options);
 };
+
+module.exports = ChronicleImpl;

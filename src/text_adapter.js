@@ -1,19 +1,8 @@
-(function(root) {
+"use strict";
 
-
-var util,
-    Chronicle,
-    TextOperation;
-
-if (typeof exports !== 'undefined') {
-  util   = require('substance-util');
-  Chronicle = require('../chronicle');
-  TextOperation = require('substance-operator').TextOperation;
-} else {
-  util = root.Substance.util;
-  Chronicle = root.Substance.Chronicle;
-  TextOperation = root.Substance.Operator.TextOperation;
-}
+var util = require('substance-util');
+var Chronicle = require('./chronicle');
+var TextOperation = require('substance-operator').TextOperation;
 
 var TextOperationAdapter = function(chronicle, doc) {
   Chronicle.Versioned.call(this, chronicle);
@@ -46,6 +35,4 @@ TextOperationAdapter.__prototype__ = function() {
 TextOperationAdapter.__prototype__.prototype = Chronicle.Versioned.prototype;
 TextOperationAdapter.prototype = new TextOperationAdapter.__prototype__();
 
-Chronicle.TextOperationAdapter = TextOperationAdapter;
-
-})(this);
+module.exports = TextOperationAdapter;

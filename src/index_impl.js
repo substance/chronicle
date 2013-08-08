@@ -252,138 +252,7 @@ IndexImpl.__private__ = function() {
 IndexImpl.__prototype__.prototype = Chronicle.Index.prototype;
 IndexImpl.prototype = new IndexImpl.__prototype__();
 
-var DiffImpl = function(data) {
-  this.data = data;
-};
 
-DiffImpl.__prototype__ = function() {
-
-  this.reverts = function() {
-    return this.data[1].slice(1, this.data[0]+1);
-  };
-
-  this.applies = function() {
-    return this.data[1].slice(this.data[0]+1);
-  };
-
-  this.hasReverts = function() {
-    return this.data[0]>0;
-  };
-
-  this.hasApplies = function() {
-    return this.data[1].length-1-this.data[0] > 0;
-  };
-
-  this.start = function() {
-    return this.data[1][0];
-  };
-
-  this.end = function() {
-    return _.last(this.data[1]);
-  };
-
-  this.root = function() {
-    return this.data[1][this.data[0]];
-  };
-
-  this.sequence = function() {
-    return this.data[1].slice(0);
-  };
-
-  this.mine = function() {
-    return this.data[1].slice(0, this.data[0]).reverse();
-  };
-
-  this.theirs = function() {
-    return this.applies();
-  };
-
-  this.inverted = function() {
-    return new DiffImpl([this.data[1].length-1-this.data[0], this.data[1].slice(0).reverse()]);
-  };
-
-  this.toJSON = function() {
-    return {
-      data: this.data
-    };
-  };
-};
-
-DiffImpl.__prototype__.prototype = Chronicle.Diff.prototype;
-DiffImpl.prototype = new DiffImpl.__prototype__();
-
-var TmpIndex = function(index) {
-  IndexImpl.call(this);
-  this.index = index;
-};
-
-TmpIndex.__prototype__ = function() {
-
-  var __super__ = util.prototype(this);
-
-  this.get = function(id) {
-    if (__super__.contains.call(this, id)) {
-      return __super__.get.call(this, id);
-    }
-    return this.index.get(id);
-  };
-
-  this.contains = function(id) {
-    return __super__.contains.call(this, id) || this.index.contains(id);
-  };
-
-  this.getChildren = function(id) {
-    var result = __super__.getChildren.call(this, id) || [];
-    if (this.index.contains(id)) {
-      result = result.concat(this.index.getChildren(id));
-    }
-    return result;
-  };
-
-  this.list = function() {
-    return __super__.list.call(this).concat(this.index.list());
-  };
-
-  this.save = function(id, recurse) {
-    if (recurse) {
-      var queue = [id];
-      var nextId, next;
-      while(queue.length > 0) {
-        nextId = queue.pop();
-        next = this.changes[nextId];
-
-        if (this.changes[nextId]) this.index.add(next);
-
-        for (var idx=0; idx < next.children; idx++) {
-          queue.unshift(next.children[idx]);
-        }
-      }
-    } else {
-      if (this.changes[id]) this.index.add(this.changes[id]);
-    }
-  };
-
-  this.reconnect = function(id, newParentId) {
-    if (!this.changes[id])
-      throw new errors.ChronicleError("Change does not exist to this index.");
-
-    var change = this.get(id);
-
-    if (!this.contains(newParentId)) {
-      throw new errors.ChronicleError("Illegal change: parent is unknown parent=" + newParentId);
-    }
-
-    if (!this.children[change.parent]) this.children[change.parent] = [];
-    this.children[change.parent] = _.without(this.children[change.parent], change.id);
-
-    change.parent = newParentId;
-
-    if (!this.children[change.parent]) this.children[change.parent] = [];
-    this.children[change.parent].push(id);
-  };
-};
-TmpIndex.__prototype__.prototype = IndexImpl.prototype;
-TmpIndex.prototype = new TmpIndex.__prototype__();
 
 // Extensions
 // --------
@@ -439,12 +308,7 @@ var makePersistent = function(index, store) {
 // Export
 // ========
 
-
-Chronicle.Diff.create = function(id, reverts, applies) {
-  return new DiffImpl([reverts.length, [id].concat(reverts).concat(applies)]);
-};
-
-Chronicle.Index.create = function(options) {
+IndexImpl.create = function(options) {
   options = options || {};
   var index = new IndexImpl();
 
@@ -455,4 +319,4 @@ Chronicle.Index.create = function(options) {
   return index;
 };
 
-Chronicle.TmpIndex = TmpIndex;
+module.exports = IndexImpl;
