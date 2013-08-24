@@ -330,6 +330,8 @@ Chronicle.__prototype__ = function() {
   // Call this if you already know path between two states
   // or if you want to apply or revert a single change.
   //
+  // Returns the change applied by the step.
+  //
 
   this.step = function(next) {
     throw new errors.SubstanceError("Not implemented.");
@@ -340,25 +342,37 @@ Chronicle.__prototype__ = function() {
     if (state === toward) return;
 
     var children = this.index.children[state];
-    if (children.length === 0) return;
-    if (children.length === 1) this.step(children[0]);
 
-    if (toward) {
+    if (children.length === 0) return;
+
+    var next;
+
+    if (children.length === 1) {
+      next = children[0];
+    }
+    else if (toward) {
       var path = this.index.shortestPath(state, toward);
       path.shift();
-      var next = path.shift();
-      if (next) this.step(next);
+      next = path.shift();
+    }
+    else {
+      next = children[children.length-1];
+    }
+
+    if (next) {
+      return this.step(next);
     } else {
-      this.step(children[children.length-1]);
+      return;
     }
   };
 
   this.rewind = function() {
     var current = this.index.get(this.versioned.getState());
     var previous;
-    if (current.id === ROOT) return;
+    if (current.id === ROOT) return null;
+
     previous = current.parent;
-    this.step(previous);
+    return this.step(previous);
   };
 
   // Create a commit that merges a history specified by its last commit.

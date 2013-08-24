@@ -82,7 +82,37 @@ ChronicleImpl.__prototype__ = function() {
     }
   };
 
-  this.step = this.apply;
+  this.step = function(nextId) {
+    var index = this.index;
+    var originalState = this.versioned.getState();
+
+    try {
+      var current = index.get(originalState);
+
+      // tolerate nop-transitions
+      if (current.id === nextId) return null;
+
+      var next = index.get(nextId);
+
+      var op;
+      if (current.parent === nextId) {
+        op = this.versioned.invert(current.data);
+      } else if (next.parent === current.id) {
+        op = next.data;
+      }
+      else {
+        throw new errors.ChronicleError("Invalid apply sequence: "+nextId+" is not parent or child of "+current.id);
+      }
+
+      this.versioned.apply(op);
+      this.versioned.setState(nextId);
+      return op;
+
+    } catch(err) {
+      this.reset(originalState, index);
+      throw err;
+    }
+  };
 
   this.merge = function(id, strategy, options) {
     // the given id must exist
