@@ -9,7 +9,7 @@ var TmpIndex = function(index) {
   this.index = index;
 };
 
-TmpIndex.__prototype__ = function() {
+TmpIndex.Prototype = function() {
 
   var __super__ = util.prototype(this);
 
@@ -74,7 +74,7 @@ TmpIndex.__prototype__ = function() {
     this.children[change.parent].push(id);
   };
 };
-TmpIndex.__prototype__.prototype = IndexImpl.prototype;
-TmpIndex.prototype = new TmpIndex.__prototype__();
+TmpIndex.Prototype.prototype = IndexImpl.prototype;
+TmpIndex.prototype = new TmpIndex.Prototype();
 
 module.exports = TmpIndex;

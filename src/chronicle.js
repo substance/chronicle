@@ -103,7 +103,7 @@ var Merge = function(id, main, branches) {
   this.branches = branches;
 };
 
-Merge.__prototype__ = function() {
+Merge.Prototype = function() {
 
   var __super__ = util.prototype(this);
 
@@ -115,8 +115,8 @@ Merge.__prototype__ = function() {
   };
 
 };
-Merge.__prototype__.prototype = Change.prototype;
-Merge.prototype = new Merge.__prototype__();
+Merge.Prototype.prototype = Change.prototype;
+Merge.prototype = new Merge.Prototype();
 
 Merge.TYPE =  "merge";
 
@@ -136,7 +136,7 @@ var Transformed = function(id, parent, data, original) {
   this.original = original;
 };
 
-Transformed.__prototype__ = function() {
+Transformed.Prototype = function() {
 
   var __super__ = util.prototype(this);
 
@@ -157,8 +157,8 @@ Transformed.fromJSON = function(json) {
 };
 
 
-Transformed.__prototype__.prototype = Change.prototype;
-Transformed.prototype = new Transformed.__prototype__();
+Transformed.Prototype.prototype = Change.prototype;
+Transformed.prototype = new Transformed.Prototype();
 
 // A class that describes the difference of two states by
 // a sequence of changes (reverts and applies).
@@ -293,7 +293,7 @@ var Chronicle = function(index, options) {
   this.__mode__ = options.mode || Chronicle.DEFAULT_MODE;
 };
 
-Chronicle.__prototype__ = function() {
+Chronicle.Prototype = function() {
 
   // Records a change
   // --------
@@ -441,7 +441,7 @@ Chronicle.__prototype__ = function() {
 
 };
 
-Chronicle.prototype = new Chronicle.__prototype__();
+Chronicle.prototype = new Chronicle.Prototype();
 
 // only allow changes that have been checked via instant apply+revert
 Chronicle.PEDANTIC_RECORD = 1 << 1;
@@ -473,7 +473,7 @@ var Index = function() {
   this.children[ROOT] = [];
 };
 
-Index.__prototype__ = function() {
+Index.Prototype = function() {
 
   // Adds a change to the index.
   // --------
@@ -584,7 +584,7 @@ Index.__prototype__ = function() {
 
 };
 
-Index.prototype = new Index.__prototype__();
+Index.prototype = new Index.Prototype();
 
 Index.INVALID = "INVALID";
 Index.ROOT = ROOT_NODE;
@@ -601,7 +601,7 @@ var Versioned = function(chronicle) {
   chronicle.manage(this);
 };
 
-Versioned.__prototype__ = function() {
+Versioned.Prototype = function() {
 
   // Applies the given change.
   // --------
@@ -679,7 +679,7 @@ Versioned.__prototype__ = function() {
   };
 };
 
-Versioned.prototype = new Versioned.__prototype__();
+Versioned.prototype = new Versioned.Prototype();
 
 Chronicle.Change = Change;
 Chronicle.Merge = Merge;

@@ -15,7 +15,7 @@ var IndexImpl = function() {
   Chronicle.Index.call(this);
 };
 
-IndexImpl.__prototype__ = function() {
+IndexImpl.Prototype = function() {
 
   var __private__ = new IndexImpl.__private__();
   var ROOT = Chronicle.ROOT;
@@ -249,8 +249,8 @@ IndexImpl.__private__ = function() {
 
 };
 
-IndexImpl.__prototype__.prototype = Chronicle.Index.prototype;
-IndexImpl.prototype = new IndexImpl.__prototype__();
+IndexImpl.Prototype.prototype = Chronicle.Index.prototype;
+IndexImpl.prototype = new IndexImpl.Prototype();
 
 
 
