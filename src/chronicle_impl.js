@@ -15,7 +15,7 @@ var ChronicleImpl = function(index, options) {
   Chronicle.call(this, index, options);
 };
 
-ChronicleImpl.__prototype__ = function() {
+ChronicleImpl.Prototype = function() {
 
   var __private__ = new ChronicleImpl.__private__();
   var ROOT = Chronicle.Index.ROOT.id;
@@ -632,8 +632,8 @@ ChronicleImpl.__private__ = function() {
   };
 
 };
-ChronicleImpl.__prototype__.prototype = Chronicle.prototype;
-ChronicleImpl.prototype = new ChronicleImpl.__prototype__();
+ChronicleImpl.Prototype.prototype = Chronicle.prototype;
+ChronicleImpl.prototype = new ChronicleImpl.Prototype();
 
 ChronicleImpl.create = function(options) {
   options = options || {};

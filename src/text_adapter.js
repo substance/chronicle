@@ -9,7 +9,7 @@ var TextOperationAdapter = function(chronicle, doc) {
   this.doc = doc;
 };
 
-TextOperationAdapter.__prototype__ = function() {
+TextOperationAdapter.Prototype = function() {
 
   var __super__ = util.prototype(this);
 
@@ -32,7 +32,7 @@ TextOperationAdapter.__prototype__ = function() {
 
 };
 
-TextOperationAdapter.__prototype__.prototype = Chronicle.Versioned.prototype;
-TextOperationAdapter.prototype = new TextOperationAdapter.__prototype__();
+TextOperationAdapter.Prototype.prototype = Chronicle.Versioned.prototype;
+TextOperationAdapter.prototype = new TextOperationAdapter.Prototype();
 
 module.exports = TextOperationAdapter;

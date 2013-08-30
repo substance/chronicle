@@ -5,7 +5,7 @@ var DiffImpl = function(data) {
   this.data = data;
 };
 
-DiffImpl.__prototype__ = function() {
+DiffImpl.Prototype = function() {
 
   this.reverts = function() {
     return this.data[1].slice(1, this.data[0]+1);
@@ -58,8 +58,8 @@ DiffImpl.__prototype__ = function() {
   };
 };
 
-DiffImpl.__prototype__.prototype = Chronicle.Diff.prototype;
-DiffImpl.prototype = new DiffImpl.__prototype__();
+DiffImpl.Prototype.prototype = Chronicle.Diff.prototype;
+DiffImpl.prototype = new DiffImpl.Prototype();
 
 DiffImpl.create = function(id, reverts, applies) {
   return new DiffImpl([reverts.length, [id].concat(reverts).concat(applies)]);

@@ -9,7 +9,7 @@ var ArrayOperationAdapter = function(chronicle, array) {
   this.array = array;
 };
 
-ArrayOperationAdapter.__prototype__ = function() {
+ArrayOperationAdapter.Prototype = function() {
 
   var __super__ = util.prototype(this);
 
@@ -34,7 +34,7 @@ ArrayOperationAdapter.__prototype__ = function() {
 
 };
 
-ArrayOperationAdapter.__prototype__.prototype = Chronicle.Versioned.prototype;
-ArrayOperationAdapter.prototype = new ArrayOperationAdapter.__prototype__();
+ArrayOperationAdapter.Prototype.prototype = Chronicle.Versioned.prototype;
+ArrayOperationAdapter.prototype = new ArrayOperationAdapter.Prototype();
 
 module.exports = ArrayOperationAdapter;
