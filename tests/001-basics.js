@@ -171,4 +171,4 @@ var Basics = function() {
 };
 Basics.prototype = ChronicleTest.prototype;
 
-registerTest(['Chronicle', 'Basics'], new Basics());
+registerTest(['Substance.Chronicle', 'Basics'], new Basics());

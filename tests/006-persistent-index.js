@@ -70,4 +70,4 @@ function PersistentIndexTest() {
   ];
 }
 
-registerTest(['Chronicle', 'Persistent Index'], new PersistentIndexTest());
+registerTest(['Substance.Chronicle', 'Persistent Index'], new PersistentIndexTest());

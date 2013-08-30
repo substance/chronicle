@@ -125,4 +125,4 @@ var Merge = function() {
 };
 Merge.prototype = ChronicleTest.prototype;
 
-registerTest(['Chronicle', 'Merge'], new Merge());
+registerTest(['Substance.Chronicle', 'Merge'], new Merge());

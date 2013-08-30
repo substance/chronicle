@@ -112,4 +112,4 @@ var Diff = function() {
 };
 Diff.prototype = ChronicleTest.prototype;
 
-registerTest(['Chronicle', 'Diff'], new Diff());
+registerTest(['Substance.Chronicle', 'Diff'], new Diff());

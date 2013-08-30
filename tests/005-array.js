@@ -113,4 +113,4 @@ var ChronicledArrayTest = function() {
 
 };
 
-registerTest(['Chronicle', 'Array Operation'], new ChronicledArrayTest());
+registerTest(['Substance.Chronicle', 'Array Operation'], new ChronicledArrayTest());

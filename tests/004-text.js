@@ -131,4 +131,4 @@ TestDocument = function(chronicle) {
 
 };
 
-registerTest(['Chronicle', 'Text Operation'], new ChronicledTextTest());
+registerTest(['Substance.Chronicle', 'Text Operation'], new ChronicledTextTest());
