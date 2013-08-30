@@ -40,7 +40,7 @@ var ChronicleAdapter = function(chronicle) {
   Chronicle.Versioned.call(this, chronicle);
 };
 
-ChronicleAdapter.__prototype__ = function() {
+ChronicleAdapter.Prototype = function() {
 
   var __super__ = util.prototype(this);
 
@@ -115,8 +115,8 @@ ChronicleAdapter.__prototype__ = function() {
 
 };
 
-ChronicleAdapter.__prototype__.prototype = _.extend({}, Calculator.prototype, Chronicle.Versioned.prototype);
-ChronicleAdapter.prototype = new ChronicleAdapter.__prototype__();
+ChronicleAdapter.Prototype.prototype = _.extend({}, Calculator.prototype, Chronicle.Versioned.prototype);
+ChronicleAdapter.prototype = new ChronicleAdapter.Prototype();
 Calculator.ChronicleAdapter = ChronicleAdapter;
 
 // Export
