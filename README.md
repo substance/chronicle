@@ -24,7 +24,7 @@ With Operational Transformations changes to a document are done via so called op
 Operations are invertible and can be concatenated constituting a graph of document versions
 that can be created by applying operations.
 
-![Operations](http://github.com/substance/chronicle/blob/master/images/graph.jpg?raw=true)
+![Operations](http://github.com/substance/chronicle/blob/gh-pages/images/graph.jpg?raw=true)
 
 OT has its application in real-time collaborative editing, i.e., two or more users edit a
 document simultanously, e.g., as it is possible with Google Docs.
@@ -33,7 +33,7 @@ be resolved when two user change the document
 at the same time, to ensure that the users continue to see and work on exactly the
 same document content.
 
-![Transformation](http://github.com/substance/chronicle/blob/master/images/trafo.jpg?raw=true)
+![Transformation](http://github.com/substance/chronicle/blob/gh-pages/images/trafo.jpg?raw=true)
 
     transform(a, b) = (a', b')
 
@@ -49,7 +49,7 @@ and not by document versions. This is indeed important as there should
 be a common sense between the user about the history of changes.
 Thus, applying transformed changes as above do not lead to a common state:
 
-![Commits](http://github.com/substance/chronicle/blob/master/images/commits.jpg?raw=true)
+![Commits](http://github.com/substance/chronicle/blob/gh-pages/images/commits.jpg?raw=true)
 
 Different paths of changes are called branches.
 To be ables to have a common base to work on, one would need to bring branches
@@ -58,7 +58,7 @@ One of the users would decide to merge and record his decision as an extra chang
 In very many cases the changes of different users do not interfer, i.e., they are not
 conflicting. Then, a merge typically can be applied automatically.
 
-![Merge](http://github.com/substance/chronicle/blob/master/images/merge.jpg?raw=true)
+![Merge](http://github.com/substance/chronicle/blob/gh-pages/images/merge.jpg?raw=true)
 
 Conflicting changes are not addressed by the OT. E.g., if two users add the same text
 at the same time it will be there twice.
@@ -91,11 +91,11 @@ We call a principal rebase, those where the two involved changes are siblings.
 
 Consider the following situation:
 
-![Merge](http://github.com/substance/chronicle/blob/master/images/rebase-1.jpg?raw=true)
+![Merge](http://github.com/substance/chronicle/blob/gh-pages/images/rebase-1.jpg?raw=true)
 
 Rebasing the change `b` onto change `a` would give a sequence of (new) changes `b'`, and `c'`.
 
-![Merge](http://github.com/substance/chronicle/blob/master/images/rebase-2.jpg?raw=true)
+![Merge](http://github.com/substance/chronicle/blob/gh-pages/images/rebase-2.jpg?raw=true)
 
 Let us first consider only this special kind of rebase-scenarios, where the
 two changes `a` and `b` are siblings.
@@ -104,13 +104,13 @@ The case with only two changes involved is directly covered by the `transform` o
 
     transform(a,b) = (a', b')
 
-![Merge](http://github.com/substance/chronicle/blob/master/images/rebase-3.jpg?raw=true)
+![Merge](http://github.com/substance/chronicle/blob/gh-pages/images/rebase-3.jpg?raw=true)
 
 This can be extended iteratively to the case with children changes.
 
     transform(a', c) = (a'', c')
 
-![Merge](http://github.com/substance/chronicle/blob/master/images/rebase-4.jpg?raw=true)
+![Merge](http://github.com/substance/chronicle/blob/gh-pages/images/rebase-4.jpg?raw=true)
 
 
 #### Elimination
@@ -123,9 +123,9 @@ Then we can apply the following transformation to achieve the desired change `c'
 
     transform(inv(b), c) = (inv(b)' , c')
 
-![Merge](http://github.com/substance/chronicle/blob/master/images/reduction-1.jpg?raw=true)
+![Merge](http://github.com/substance/chronicle/blob/gh-pages/images/reduction-1.jpg?raw=true)
 
-![Merge](http://github.com/substance/chronicle/blob/master/images/reduction-2.jpg?raw=true)
+![Merge](http://github.com/substance/chronicle/blob/gh-pages/images/reduction-2.jpg?raw=true)
 
 As before, to propagate this reduction through a sub-graph we would apply
 the transformation to all children recursively.
