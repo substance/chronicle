@@ -199,15 +199,15 @@ IndexImpl.Prototype = function() {
     var queue = [start];
     var nextId, next;
     while (queue.length > 0) {
-      nextId = queue.unshift();
+      nextId = queue.shift();
       next = this.get(nextId);
       iterator(next);
 
       var children = this.children[nextId];
       for (var i = 0; i < children.length; i++) {
         queue.push(children[i]);
-      };
-    };
+      }
+    }
   };
 };
 

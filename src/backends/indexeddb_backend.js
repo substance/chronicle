@@ -1,5 +1,8 @@
 "use strict";
 
+var Chronicle = require("../chronicle");
+var Index = Chronicle.Index;
+
 var IndexedDbBackend = function(name, index) {
   this.name = name;
   this.index = index;
@@ -23,9 +26,11 @@ IndexedDbBackend.Prototype = function() {
       db.createObjectStore("changes", { keyPath: "id" });
     };
     request.onerror = function(event) {
+      console.error("Could not open database", self.name);
       cb(event);
     };
     request.onsuccess = function(event) {
+      console.log("Opened database", self.name);
       self.db = event.target.result;
       cb(null);
     };
@@ -34,24 +39,28 @@ IndexedDbBackend.Prototype = function() {
   // Load all stored changes into the memory index
   this.load = function(cb) {
     var self = this;
-    var transaction = this.db.transaction(["changes"], "read");
+    var transaction = this.db.transaction(["changes"]);
     var objectStore = transaction.objectStore("changes");
 
     var iterator = objectStore.openCursor();
+
+    var changes = {};
 
     iterator.onsuccess = function(event) {
       var cursor = event.target.result;
       if (cursor) {
         // Note: this requires the changes iterated topoloically sorted
         // i.e., a change can only be added if all its parents are already added.
-        self.index.add(cursor.value);
+        changes[cursor.key] = cursor.value;
         cursor.continue();
         return;
       }
+      self.index.import(Index.adapt(changes));
       cb(null);
     };
 
     iterator.onerror = function(event) {
+      console.error("Error during loading...", event);
       cb(event);
     };
   };
@@ -73,7 +82,7 @@ IndexedDbBackend.Prototype = function() {
 
     var changes = transaction.objectStore("changes");
     this.index.foreach(function(change) {
-      var request = changes.add(change);
+      var request = changes.add(change.toJSON());
       request.onerror = function(event) {
         console.error("Could not add change: ", change.id, event);
       };
