@@ -39,6 +39,12 @@ var TestDocument = function(chronicle) {
     this.text = op.apply(this.text);
     return this.chronicle.record(op);
   };
+
+  this.toJSON = function() {
+    return {
+      text: this.text
+    };
+  };
 };
 
 var DB_NAME = "substance.chronicle.test";
@@ -49,45 +55,96 @@ var DB_NAME = "substance.chronicle.test";
 function IndexedDbBackendTest() {
 
   this.setup = function() {
-    this.chronicle = Chronicle.create();
-    this.index = this.chronicle.index;
-    this.backend = new IndexedDBBackend(DB_NAME, this.index);
+    this.backend = new IndexedDBBackend(DB_NAME, Chronicle.Index.create());
     // delete the database initially
     this.backend.delete();
-    this.fixture();
   };
 
   this.fixture = function() {
-    this.document = new TestDocument(this.chronicle);
-    this.ID1 = this.document.apply(OP1);
-    this.ID2 = this.document.apply(OP2);
-    this.ID3 = this.document.apply(OP3);
-    this.ID4 = this.document.apply(OP4);
-    this.chronicle.open(this.ID1);
-    this.ID5_1 = this.document.apply(OP5_1);
-    this.chronicle.open(this.ID1);
-    this.ID5_2 = this.document.apply(OP5_2);
-    this.chronicle.open("ROOT");
+    var chronicle = Chronicle.create();
+    var document = new TestDocument(chronicle);
+    this.applyChanges(document);
+    return document;
+  };
+
+  this.applyChanges = function(document) {
+    this.ID1 = document.apply(OP1);
+    this.ID2 = document.apply(OP2);
+    this.ID3 = document.apply(OP3);
+    this.ID4 = document.apply(OP4);
+    document.chronicle.open(this.ID1);
+    this.ID5_1 = document.apply(OP5_1);
+    document.chronicle.open(this.ID1);
+    this.ID5_2 = document.apply(OP5_2);
+    document.chronicle.open("ROOT");
   };
 
   this.actions = [
     "Open database", function(cb) {
-      this.backend.open(cb);
+      var backend = new IndexedDBBackend(DB_NAME, Chronicle.Index.create());
+      backend.open(cb);
     },
 
     "Save an index", function(cb) {
-      this.backend.save(cb);
+      var document = this.fixture();
+      var backend = new IndexedDBBackend(DB_NAME, document.chronicle.index);
+      backend.open(function(error) {
+        if (error) return cb(error);
+        backend.save(cb);
+      });
     },
 
     "Load the index", function(cb) {
-      this.chronicle = Chronicle.create();
-      this.index = this.chronicle.index;
+      this.index = Chronicle.Index.create();
       var backend = new IndexedDBBackend(DB_NAME, this.index);
-      this.backend = backend;
       backend.open(function(err) {
         if (err) return cb(err);
         backend.load(cb);
       });
+    },
+
+    "Check the loaded index", function() {
+      assert.isTrue(this.index.contains(this.ID1));
+      assert.isTrue(this.index.contains(this.ID2));
+      assert.isTrue(this.index.contains(this.ID3));
+      assert.isTrue(this.index.contains(this.ID4));
+      assert.isTrue(this.index.contains(this.ID5_1));
+      assert.isTrue(this.index.contains(this.ID5_2));
+    },
+
+    "Save a snapshot", function(cb) {
+      var self = this;
+      var document = this.fixture();
+      var backend = new IndexedDBBackend(DB_NAME, document.chronicle.index);
+      document.chronicle.open("ROOT");
+      backend.open(function(error) {
+        if (error) return cb(error);
+        backend.saveSnapshot("ROOT", document, function(error) {
+          if (error) return cb(error);
+          document.chronicle.open(self.ID5_1);
+          backend.saveSnapshot(self.ID5_1, document, cb);
+        });
+      });
+    },
+
+    "List snapshots", function(cb) {
+      var self = this;
+      var backend = new IndexedDBBackend(DB_NAME, Chronicle.Index.create());
+      backend.open(function(error) {
+        if (error) return cb(error);
+        backend.listSnapshots(function(error, snapshots) {
+          if (error) return cb(error);
+          self.snapshots = snapshots;
+          cb(null);
+        });
+      });
+    },
+
+    "Check list of snapshots", function() {
+      assert.isDefined(this.snapshots);
+      assert.isEqual(2, this.snapshots.length);
+      assert.isTrue(this.snapshots.indexOf("ROOT") >= 0);
+      assert.isTrue(this.snapshots.indexOf(this.ID5_1) >= 0);
     }
   ];
 }
