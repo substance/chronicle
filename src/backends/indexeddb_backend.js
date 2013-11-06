@@ -101,7 +101,10 @@ IndexedDbBackend.Prototype = function() {
     };
 
     var snapshots = transaction.objectStore("snapshots");
-    var data = document.toJSON();
+    var data = document;
+    // if the provided document has a toJSON function
+    // apply it before serialization
+    if (data.toJSON) data = data.toJSON();
     data.sha = sha;
     var request = snapshots.add(data);
     request.onerror = function(event) {
