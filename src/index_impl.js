@@ -194,6 +194,21 @@ IndexImpl.Prototype = function() {
     return newIds;
   };
 
+  this.foreach = function(iterator, start) {
+    start = start || "ROOT";
+    var queue = [start];
+    var nextId, next;
+    while (queue.length > 0) {
+      nextId = queue.shift();
+      next = this.get(nextId);
+      iterator(next);
+
+      var children = this.children[nextId];
+      for (var i = 0; i < children.length; i++) {
+        queue.push(children[i]);
+      }
+    }
+  };
 };
 
 IndexImpl.__private__ = function() {
