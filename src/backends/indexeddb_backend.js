@@ -73,16 +73,17 @@ IndexedDbBackend.Prototype = function() {
     var transaction = this.db.transaction(["changes"], "readwrite");
     transaction.oncomplete = function() {
       console.log("Index saved.");
-      cb(null);
+      if (cb) cb(null);
     };
     transaction.onerror = function(event) {
       console.log("Error while saving index.");
-      cb(event);
+      if (cb) cb(event);
     };
 
     var changes = transaction.objectStore("changes");
     this.index.foreach(function(change) {
       var request = changes.add(change.toJSON());
+      // TODO: with the current approach we need to be able to overwrite entries
       request.onerror = function(event) {
         console.error("Could not add change: ", change.id, event);
       };
