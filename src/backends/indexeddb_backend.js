@@ -82,7 +82,11 @@ IndexedDbBackend.Prototype = function() {
 
     var changes = transaction.objectStore("changes");
     this.index.foreach(function(change) {
-      var request = changes.add(change.toJSON());
+      var data = change;
+      if (change instanceof Chronicle.Change) {
+        data = change.toJSON();
+      }
+      var request = changes.put(data);
       // TODO: with the current approach we need to be able to overwrite entries
       request.onerror = function(event) {
         console.error("Could not add change: ", change.id, event);
