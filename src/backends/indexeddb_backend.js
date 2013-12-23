@@ -111,7 +111,7 @@ IndexedDbBackend.Prototype = function() {
     // apply it before serialization
     if (data.toJSON) data = data.toJSON();
     data.sha = sha;
-    var request = snapshots.add(data);
+    var request = snapshots.put(data);
     request.onerror = function(event) {
       console.error("Could not add snapshot: ", data, event);
     };
