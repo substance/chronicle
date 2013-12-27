@@ -11,8 +11,38 @@ var IndexedDbBackend = function(name, index) {
 
 IndexedDbBackend.Prototype = function() {
 
-  this.delete = function() {
-    window.indexedDB.deleteDatabase(this.name);
+  this.delete = function(cb) {
+    var self = this;
+    this.clear(function(error) {
+      var request = window.indexedDB.deleteDatabase(self.name);
+      cb(null);
+    });
+  };
+
+  var __clearObjectStore = function(db, name, cb) {
+    var transaction = db.transaction([name], "readwrite");
+    var objectStore = transaction.objectStore(name);
+    var request = objectStore.clear();
+    request.onsuccess = function() {
+      cb(null);
+    };
+    request.onerror = function(err) {
+      cb(err);
+    };
+  };
+
+  this.clear = function(cb) {
+    console.log("Clearing", this.name);
+    var db = this.db;
+    __clearObjectStore(db, "changes",
+      function(error) {
+        if (error) {
+          console.error(error);
+          return cb(error);
+        }
+        __clearObjectStore(db, "snapshots", cb);
+      }
+    );
   };
 
   this.open = function(cb) {
@@ -37,6 +67,21 @@ IndexedDbBackend.Prototype = function() {
       cb(null);
     };
   };
+
+  this.close = function(cb) {
+    var self = this;
+    var db = null;
+    var request = this.db.close;
+    request.onsuccess = function() {
+      cb(null);
+      self.db = null;
+    };
+    request.onerror = function(error) {
+      cb(error);
+      self.db = null;
+    };
+  };
+
 
   // Load all stored changes into the memory index
   this.load = function(cb) {
