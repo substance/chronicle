@@ -1,5 +1,7 @@
 "use strict";
 
+var util = require("substance-util");
+var _ = require("underscore");
 var Chronicle = require("../chronicle");
 var Index = Chronicle.Index;
 
@@ -13,8 +15,8 @@ IndexedDbBackend.Prototype = function() {
 
   this.delete = function(cb) {
     var self = this;
-    this.clear(function(error) {
-      var request = window.indexedDB.deleteDatabase(self.name);
+    this.clear(function() {
+      window.indexedDB.deleteDatabase(self.name);
       cb(null);
     });
   };
@@ -32,17 +34,14 @@ IndexedDbBackend.Prototype = function() {
   };
 
   this.clear = function(cb) {
-    console.log("Clearing", this.name);
     var db = this.db;
-    __clearObjectStore(db, "changes",
-      function(error) {
-        if (error) {
-          console.error(error);
-          return cb(error);
-        }
-        __clearObjectStore(db, "snapshots", cb);
+    var names = ["changes", "snapshots", "refs"];
+    util.async.each({
+      items: names,
+      iterator: function(name, cb) {
+        __clearObjectStore(db, name, cb);
       }
-    );
+    }, cb);
   };
 
   this.open = function(cb) {
@@ -56,6 +55,8 @@ IndexedDbBackend.Prototype = function() {
       db.createObjectStore("changes", { keyPath: "id" });
       var snapshots = db.createObjectStore("snapshots", { keyPath: "sha" });
       snapshots.createIndex("sha", "sha", {unique:true});
+      var refs = db.createObjectStore("refs", { keyPath: "name" });
+      refs.createIndex("name", "name", {unique:true});
     };
     request.onerror = function(event) {
       console.error("Could not open database", self.name);
@@ -70,7 +71,6 @@ IndexedDbBackend.Prototype = function() {
 
   this.close = function(cb) {
     var self = this;
-    var db = null;
     var request = this.db.close;
     request.onsuccess = function() {
       cb(null);
@@ -86,56 +86,100 @@ IndexedDbBackend.Prototype = function() {
   // Load all stored changes into the memory index
   this.load = function(cb) {
     var self = this;
-    var transaction = this.db.transaction(["changes"]);
+    var transaction = this.db.transaction(["changes", "refs"]);
     var objectStore = transaction.objectStore("changes");
 
     var iterator = objectStore.openCursor();
-
     var changes = {};
-
     iterator.onsuccess = function(event) {
       var cursor = event.target.result;
       if (cursor) {
-        // Note: this requires the changes iterated topoloically sorted
-        // i.e., a change can only be added if all its parents are already added.
         changes[cursor.key] = cursor.value;
         cursor.continue();
         return;
       }
+      // Note: Index.adapt() mimics a hash to be a Chronicle.Index.
       self.index.import(Index.adapt(changes));
-      cb(null);
-    };
 
+      var refStore = transaction.objectStore("refs");
+      iterator = refStore.openCursor();
+      iterator.onsuccess = function(event) {
+        var cursor = event.target.result;
+        if (cursor) {
+          self.index.setRef(cursor.key, cursor.value["sha"]);
+          cursor.continue();
+          return;
+        }
+        cb(null);
+      };
+      iterator.onerror = function(event) {
+        console.error("Error during loading...", event);
+        cb(event);
+      };
+    };
     iterator.onerror = function(event) {
       console.error("Error during loading...", event);
       cb(event);
     };
   };
 
-  this.save = function(cb) {
+  var _saveChanges = function(self, cb) {
     // TODO: we should use a special index which keeps track of new changes to be synched
     // for now brute-forcely overwriting everything
-    var transaction = this.db.transaction(["changes"], "readwrite");
-    transaction.oncomplete = function() {
-      console.log("Index saved.");
-      if (cb) cb(null);
-    };
+    var transaction = self.db.transaction(["changes"], "readwrite");
     transaction.onerror = function(event) {
-      console.log("Error while saving index.");
+      console.log("Error while saving changes.");
       if (cb) cb(event);
     };
+    transaction.oncomplete = function() {
+      if (cb) cb(null);
+    };
 
+    // NOTE: brute-force. Saving all changes everytime. Should be optimized someday.
     var changes = transaction.objectStore("changes");
-    this.index.foreach(function(change) {
+    self.index.foreach(function(change) {
       var data = change;
       if (change instanceof Chronicle.Change) {
         data = change.toJSON();
       }
       var request = changes.put(data);
-      // TODO: with the current approach we need to be able to overwrite entries
       request.onerror = function(event) {
         console.error("Could not add change: ", change.id, event);
       };
+    });
+  };
+
+  var _saveRefs = function(self, cb) {
+    // TODO: we should use a special index which keeps track of new changes to be synched
+    // for now brute-forcely overwriting everything
+    var transaction = self.db.transaction(["refs"], "readwrite");
+    transaction.onerror = function(event) {
+      console.log("Error while saving refs.");
+      if (cb) cb(event);
+    };
+    transaction.oncomplete = function() {
+      console.log("Index saved.");
+      if (cb) cb(null);
+    };
+
+    var refs = transaction.objectStore("refs");
+    _.each(self.index.listRefs(), function(name) {
+      var data = {
+        name: name,
+        sha: self.index.getRef(name)
+      };
+      var request = refs.put(data);
+      request.onerror = function(event) {
+        console.error("Could not store ref: ", data, event);
+      };
+    });
+  };
+
+  this.save = function(cb) {
+    var self = this;
+    _saveChanges(self, function(error) {
+      if (error) return cb(error);
+      _saveRefs(self, cb);
     });
   };
 
