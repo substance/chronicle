@@ -412,7 +412,7 @@ Chronicle.Prototype = function() {
   //
 
   this.find = function(name) {
-    this.index.getRef(name);
+    return this.index.getRef(name);
   };
 
   // Get the current version.
