@@ -57,7 +57,7 @@ function IndexedDbBackendTest() {
   this.setup = function() {
     this.backend = new IndexedDBBackend(DB_NAME, Chronicle.Index.create());
     // delete the database initially
-    this.backend.delete();
+    window.indexedDB.deleteDatabase(DB_NAME);
   };
 
   this.fixture = function() {
