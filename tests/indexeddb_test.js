@@ -1,8 +1,6 @@
 "use strict";
 
-// Import
-// ========
-
+var util = require("substance-util");
 var Test = require('substance-test');
 var assert = Test.assert;
 var registerTest = Test.registerTest;
@@ -14,6 +12,7 @@ var TextOperation = require('substance-operator').TextOperation;
 
 
 // Fixture
+// -------
 
 var OP1 = TextOperation.Insert(0, "Lorem amet");
 var OP2 = TextOperation.Insert(5, " ipsum");
@@ -54,11 +53,8 @@ var DB_NAME = "substance.chronicle.test";
 
 function IndexedDbBackendTest() {
 
-  this.setup = function() {
-    this.backend = new IndexedDBBackend(DB_NAME, Chronicle.Index.create());
-    // delete the database initially
-    window.indexedDB.deleteDatabase(DB_NAME);
-  };
+  // this.setup = function() {
+  // };
 
   this.fixture = function() {
     var chronicle = Chronicle.create();
@@ -80,36 +76,85 @@ function IndexedDbBackendTest() {
   };
 
   this.actions = [
-    "Open database", function(cb) {
+    "Delete exisiting database", function(cb) {
+      // delete the database initially
+      var __id__ = util.uuid();
+      console.log("Deleting test database...", __id__);
+      var request = window.indexedDB.deleteDatabase(DB_NAME);
+      request.onsuccess = function() {
+        console.log("...deleted.", __id__);
+        cb(null);
+      };
+      request.onerror = function(error) {
+        console.log("...failed.", __id__);
+        cb(error);
+      };
+    },
+
+    "Open and close database", function(cb) {
       var backend = new IndexedDBBackend(DB_NAME, Chronicle.Index.create());
-      backend.open(cb);
+
+      util.async.sequential({
+        "functions": [
+          function(cb) {
+            backend.open(cb);
+          }
+        ],
+        "finally": function(err) {
+          backend.close(function() {
+            cb(err, null);
+          });
+        }
+      }, cb);
     },
 
     "Save an index", function(cb) {
       var document = this.fixture();
       var backend = new IndexedDBBackend(DB_NAME, document.chronicle.index);
-      backend.open(function(error) {
-        if (error) return cb(error);
-        backend.save(cb);
-      });
+      util.async.sequential({
+        "functions": [
+          function(cb) {
+            backend.open(cb);
+          },
+          function(cb) {
+            backend.save(cb);
+          }
+        ],
+        "finally": function(err) {
+          backend.close(function() {
+            cb(err, null);
+          });
+        }
+      }, cb);
     },
 
     "Load the index", function(cb) {
-      this.index = Chronicle.Index.create();
-      var backend = new IndexedDBBackend(DB_NAME, this.index);
-      backend.open(function(err) {
-        if (err) return cb(err);
-        backend.load(cb);
-      });
-    },
-
-    "Check the loaded index", function() {
-      assert.isTrue(this.index.contains(this.ID1));
-      assert.isTrue(this.index.contains(this.ID2));
-      assert.isTrue(this.index.contains(this.ID3));
-      assert.isTrue(this.index.contains(this.ID4));
-      assert.isTrue(this.index.contains(this.ID5_1));
-      assert.isTrue(this.index.contains(this.ID5_2));
+      var self = this;
+      var index = Chronicle.Index.create();
+      var backend = new IndexedDBBackend(DB_NAME, index);
+      util.async.sequential({
+        "functions": [
+          function(cb) {
+            backend.open(cb);
+          },
+          function(cb) {
+            backend.load(cb);
+          },
+          function() {
+            assert.isTrue(index.contains(self.ID1));
+            assert.isTrue(index.contains(self.ID2));
+            assert.isTrue(index.contains(self.ID3));
+            assert.isTrue(index.contains(self.ID4));
+            assert.isTrue(index.contains(self.ID5_1));
+            assert.isTrue(index.contains(self.ID5_2));
+          }
+        ],
+        "finally": function(err) {
+          backend.close(function() {
+            cb(err, null);
+          });
+        }
+      }, cb);
     },
 
     "Save a snapshot", function(cb) {
@@ -117,34 +162,53 @@ function IndexedDbBackendTest() {
       var document = this.fixture();
       var backend = new IndexedDBBackend(DB_NAME, document.chronicle.index);
       document.chronicle.open("ROOT");
-      backend.open(function(error) {
-        if (error) return cb(error);
-        backend.saveSnapshot("ROOT", document, function(error) {
-          if (error) return cb(error);
-          document.chronicle.open(self.ID5_1);
-          backend.saveSnapshot(self.ID5_1, document, cb);
-        });
-      });
+
+      util.async.sequential({
+        "functions": [
+          function(cb) {
+            backend.open(cb);
+          },
+          function(cb) {
+            backend.saveSnapshot("ROOT", document, cb);
+          },
+          function(cb) {
+            document.chronicle.open(self.ID5_1);
+            backend.saveSnapshot(self.ID5_1, document, cb);
+          }
+        ],
+        "finally": function(err) {
+          backend.close(function() {
+            cb(err, null);
+          });
+        }
+      }, cb);
     },
 
     "List snapshots", function(cb) {
       var self = this;
       var backend = new IndexedDBBackend(DB_NAME, Chronicle.Index.create());
-      backend.open(function(error) {
-        if (error) return cb(error);
-        backend.listSnapshots(function(error, snapshots) {
-          if (error) return cb(error);
-          self.snapshots = snapshots;
-          cb(null);
-        });
-      });
-    },
-
-    "Check list of snapshots", function() {
-      assert.isDefined(this.snapshots);
-      assert.isEqual(2, this.snapshots.length);
-      assert.isTrue(this.snapshots.indexOf("ROOT") >= 0);
-      assert.isTrue(this.snapshots.indexOf(this.ID5_1) >= 0);
+      util.async.sequential({
+        "functions": [
+          function(cb) {
+            backend.open(cb);
+          },
+          function(cb) {
+            backend.listSnapshots(cb);
+          },
+          function(snapshots, cb) {
+            assert.isDefined(snapshots);
+            assert.isEqual(2, snapshots.length);
+            assert.isTrue(snapshots.indexOf("ROOT") >= 0);
+            assert.isTrue(snapshots.indexOf(self.ID5_1) >= 0);
+            cb(null);
+          }
+        ],
+        "finally": function(err) {
+          backend.close(function() {
+            cb(err, null);
+          });
+        }
+      }, cb);
     }
   ];
 }

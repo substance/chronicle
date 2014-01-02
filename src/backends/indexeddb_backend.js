@@ -71,17 +71,9 @@ IndexedDbBackend.Prototype = function() {
 
   this.close = function(cb) {
     var self = this;
-    var request = this.db.close;
-    request.onsuccess = function() {
-      cb(null);
-      self.db = null;
-    };
-    request.onerror = function(error) {
-      cb(error);
-      self.db = null;
-    };
+    this.db.close();
+    cb(null);
   };
-
 
   // Load all stored changes into the memory index
   this.load = function(cb) {

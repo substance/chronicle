@@ -4,4 +4,8 @@ require("./003-merge");
 require("./004-text");
 require("./005-array");
 require("./006-persistent-index");
-require("./indexeddb_test");
+
+// skip this test when no indexedDB is available
+if (window && window.indexedDB) {
+  require("./indexeddb_test");
+};
