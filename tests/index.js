@@ -6,6 +6,6 @@ require("./005-array");
 require("./006-persistent-index");
 
 // skip this test when no indexedDB is available
-if (window && window.indexedDB) {
+if (typeof windows !== "undefined" && window.indexedDB) {
   require("./indexeddb_test");
 };
