@@ -72,7 +72,7 @@ IndexedDbBackend.Prototype = function() {
   this.close = function(cb) {
     var self = this;
     this.db.close();
-    cb(null);
+    if (cb) cb(null);
   };
 
   // Load all stored changes into the memory index
