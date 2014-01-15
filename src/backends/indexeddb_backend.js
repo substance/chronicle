@@ -70,6 +70,7 @@ IndexedDbBackend.Prototype = function() {
   };
 
   this.close = function(cb) {
+    // console.log("IndexedDbBackend.close()");
     var self = this;
     this.db.close();
     if (cb) cb(null);
@@ -150,7 +151,7 @@ IndexedDbBackend.Prototype = function() {
       if (cb) cb(event);
     };
     transaction.oncomplete = function() {
-      console.log("Index saved.");
+      console.log("...saved refs");
       if (cb) cb(null);
     };
 
@@ -168,9 +169,11 @@ IndexedDbBackend.Prototype = function() {
   };
 
   this.save = function(cb) {
+    // console.log("IndexedDbBackend.save()");
     var self = this;
     _saveChanges(self, function(error) {
       if (error) return cb(error);
+      // console.log("...saved changes.");
       _saveRefs(self, cb);
     });
   };
