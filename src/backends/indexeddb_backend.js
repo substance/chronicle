@@ -63,7 +63,7 @@ IndexedDbBackend.Prototype = function() {
       cb(event);
     };
     request.onsuccess = function(event) {
-      console.log("Opened database", self.name);
+      // console.log("Opened database", self.name);
       self.db = event.target.result;
       cb(null);
     };
@@ -121,7 +121,7 @@ IndexedDbBackend.Prototype = function() {
     // for now brute-forcely overwriting everything
     var transaction = self.db.transaction(["changes"], "readwrite");
     transaction.onerror = function(event) {
-      console.log("Error while saving changes.");
+      console.error("Error while saving changes.");
       if (cb) cb(event);
     };
     transaction.oncomplete = function() {
@@ -147,11 +147,11 @@ IndexedDbBackend.Prototype = function() {
     // for now brute-forcely overwriting everything
     var transaction = self.db.transaction(["refs"], "readwrite");
     transaction.onerror = function(event) {
-      console.log("Error while saving refs.");
+      console.error("Error while saving refs.");
       if (cb) cb(event);
     };
     transaction.oncomplete = function() {
-      console.log("...saved refs");
+      // console.log("...saved refs");
       if (cb) cb(null);
     };
 
@@ -181,11 +181,11 @@ IndexedDbBackend.Prototype = function() {
   this.saveSnapshot = function(sha, document, cb) {
     var transaction = this.db.transaction(["snapshots"], "readwrite");
     transaction.oncomplete = function() {
-      console.log("Saved snapshot.");
+      // console.log("Saved snapshot.");
       cb(null);
     };
     transaction.onerror = function(event) {
-      console.log("Error while saving snapshot.");
+      console.error("Error while saving snapshot.");
       cb(event);
     };
 
