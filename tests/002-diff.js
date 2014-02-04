@@ -5,7 +5,6 @@
 
 var Test = require('substance-test');
 var assert = Test.assert;
-var registerTest = Test.registerTest;
 var Chronicle = require('../index');
 var ChronicleTest = require("./chronicle_test");
 
@@ -16,9 +15,10 @@ var ChronicleTest = require("./chronicle_test");
 var ROOT = Chronicle.Index.ROOT.id;
 
 var Diff = function() {
-
   ChronicleTest.call(this);
+};
 
+Diff.Prototype = function() {
   this.actions = [
 
     "Diff (01 -> 02)", function() {
@@ -110,6 +110,7 @@ var Diff = function() {
     }
   ];
 };
-Diff.prototype = ChronicleTest.prototype;
+Diff.Prototype.prototype = ChronicleTest.prototype;
+Diff.prototype = new Diff.Prototype();
 
-registerTest(['Substance.Chronicle', 'Diff'], new Diff());
+Test.registerTest(['Substance.Chronicle', 'Diff'], new Diff());

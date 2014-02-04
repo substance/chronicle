@@ -9,7 +9,6 @@ var util = require('substance-util');
 var errors = util.errors;
 var Test = require('substance-test');
 var assert = Test.assert;
-var registerTest = Test.registerTest;
 var Chronicle = require('../index');
 var ChronicleTest = require("./chronicle_test");
 
@@ -37,6 +36,9 @@ var PLUS = function(id, parents) {
 
 var Basics = function() {
   ChronicleTest.call(this);
+}
+
+Basics.Prototype = function() {
 
   // deactivate the default fixture
   // for testing basic behavior
@@ -169,6 +171,7 @@ var Basics = function() {
 
   ];
 };
-Basics.prototype = ChronicleTest.prototype;
+Basics.Prototype.prototype = ChronicleTest.prototype;
+Basics.prototype = new Basics.Prototype();
 
-registerTest(['Substance.Chronicle', 'Basics'], new Basics());
+Test.registerTest(['Substance.Chronicle', 'Basics'], new Basics());

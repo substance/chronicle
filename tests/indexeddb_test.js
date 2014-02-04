@@ -3,10 +3,7 @@
 var util = require("substance-util");
 var Test = require('substance-test');
 var assert = Test.assert;
-var registerTest = Test.registerTest;
 var Chronicle = require('../index');
-// var MemoryStore = require('substance-store').MemoryStore;
-// var Change = Chronicle.Change;
 var IndexedDBBackend = require("../src/backends/indexeddb_backend");
 var TextOperation = require('substance-operator').TextOperation;
 
@@ -51,10 +48,11 @@ var DB_NAME = "substance.chronicle.test";
 // Test
 // ========
 
-function IndexedDbBackendTest() {
+var IndexedDbBackendTest = function() {
+  Test.call(this);
+};
 
-  // this.setup = function() {
-  // };
+IndexedDbBackendTest.Prototype = function() {
 
   this.fixture = function() {
     var chronicle = Chronicle.create();
@@ -211,6 +209,8 @@ function IndexedDbBackendTest() {
       }, cb);
     }
   ];
-}
+};
+IndexedDbBackendTest.Prototype.prototype = Test.prototype;
+IndexedDbBackendTest.Prototype = new IndexedDbBackendTest.Prototype();
 
-registerTest(['Substance.Chronicle', 'IndexedDB Backend'], new IndexedDbBackendTest());
+Test.registerTest(['Substance.Chronicle', 'IndexedDB Backend'], new IndexedDbBackendTest());
