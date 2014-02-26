@@ -46,7 +46,10 @@ var OP5_2 = TextOperation.Insert(6, "sit ");
 var TestDocument;
 
 var ChronicledTextTest = function() {
+  Test.call(this);
+}
 
+ChronicledTextTest.Prototype = function() {
   var ID_IDX = 1;
 
   this.uuid = function() {
@@ -108,8 +111,9 @@ var ChronicledTextTest = function() {
     },
 
   ];
-
 };
+ChronicledTextTest.Prototype.prototype = Test.prototype;
+ChronicledTextTest.prototype = new ChronicledTextTest.Prototype();
 
 TestDocument = function(chronicle) {
   this.text = "";
@@ -131,4 +135,4 @@ TestDocument = function(chronicle) {
 
 };
 
-registerTest(['Substance.Chronicle', 'Text Operation'], new ChronicledTextTest());
+Test.registerTest(['Substance.Chronicle', 'Text Operation'], new ChronicledTextTest());

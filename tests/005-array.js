@@ -5,7 +5,6 @@
 
 var Test = require('substance-test');
 var assert = Test.assert;
-var registerTest = Test.registerTest;
 var Chronicle = require('../index');
 var Operator = require('substance-operator');
 var ArrayOperation = Operator.ArrayOperation;
@@ -38,7 +37,10 @@ var ARR_5 = [2,1];
 var ARR_M1 = [3,4,1];
 
 var ChronicledArrayTest = function() {
+  Test.call(this);
+};
 
+ChronicledArrayTest.Prototype = function() {
   var ID_IDX = 1;
 
   this.uuid = function() {
@@ -110,7 +112,8 @@ var ChronicledArrayTest = function() {
     },
 
   ];
-
 };
+ChronicledArrayTest.Prototype.prototype = Test.prototype;
+ChronicledArrayTest.prototype = new ChronicledArrayTest.Prototype();
 
-registerTest(['Substance.Chronicle', 'Array Operation'], new ChronicledArrayTest());
+Test.registerTest(['Substance.Chronicle', 'Array Operation'], new ChronicledArrayTest());

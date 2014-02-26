@@ -16,18 +16,18 @@
   },
   "dependencies": {
     "underscore": "1.5.x",
-    "substance-util": "0.2.0",
-    "substance-operator": "0.2.0"
+    "substance-util": "0.3.0",
+    "substance-operator": "0.3.0"
   },
   "devDependencies": {
     "mocha": "1.12.x",
-    "substance-test": "0.2.0",
+    "substance-test": "0.3.0",
     "substance-store": "0.1.x"
   },
   "scripts": {
     "test": "mocha -R spec tests/run.js"
   },
-  "version": "0.2.0",
+  "version": "0.3.0",
   "engines": {
     "node": ">=0.8.x",
     "npm": ">=1.1.x"

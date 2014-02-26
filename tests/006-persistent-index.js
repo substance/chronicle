@@ -14,7 +14,11 @@ var Change = Chronicle.Change;
 // Test
 // ========
 
-function PersistentIndexTest() {
+var PersistentIndexTest = function() {
+  Test.call(this);
+};
+
+PersistentIndexTest.Prototype = function() {
 
   this.setup = function() {
     this.store = new MemoryStore();
@@ -68,6 +72,8 @@ function PersistentIndexTest() {
     },
 
   ];
-}
+};
+PersistentIndexTest.Prototype.prototype = Test.prototype;
+PersistentIndexTest.prototype = new PersistentIndexTest.Prototype();
 
-registerTest(['Substance.Chronicle', 'Persistent Index'], new PersistentIndexTest());
+Test.registerTest(['Substance.Chronicle', 'Persistent Index'], new PersistentIndexTest());

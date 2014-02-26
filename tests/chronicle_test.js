@@ -6,6 +6,7 @@
 var _ = require('underscore');
 var Chronicle = require('../index');
 var Calculator = require('./example');
+var Test = require("substance-test");
 
 
 // Test
@@ -43,7 +44,10 @@ function VAL(i) {return INDEX[i][__VAL__];}
 var ID_IDX = 1;
 
 var ChronicleTest = function() {
+  Test.call(this);
+};
 
+ChronicleTest.Prototype = function() {
   this.RESULTS = _.reduce(INDEX, function(memo, e) {
     memo[e[__ID__]] = e[__RESULT__]; return memo;
   }, {});
@@ -91,8 +95,9 @@ var ChronicleTest = function() {
     }
     this.comp.reset();
   };
-
 };
+ChronicleTest.Prototype.prototype = Test.prototype;
+ChronicleTest.prototype = new ChronicleTest.Prototype();
 
 // Export
 // ====

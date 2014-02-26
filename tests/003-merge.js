@@ -5,7 +5,6 @@
 
 var Test = require('substance-test');
 var assert = Test.assert;
-var registerTest = Test.registerTest;
 var Chronicle = require('../index');
 var ChronicleTest = require("./chronicle_test");
 
@@ -32,8 +31,10 @@ var ROOT = Chronicle.Index.ROOT.id;
 // 08: - 2
 
 var Merge = function() {
-
   ChronicleTest.call(this);
+}
+
+Merge.Prototype = function() {
 
   this.actions = [
 
@@ -123,6 +124,7 @@ var Merge = function() {
     },
   ];
 };
-Merge.prototype = ChronicleTest.prototype;
+Merge.Prototype.prototype = ChronicleTest.prototype;
+Merge.prototype = new Merge.Prototype();
 
-registerTest(['Substance.Chronicle', 'Merge'], new Merge());
+Test.registerTest(['Substance.Chronicle', 'Merge'], new Merge());

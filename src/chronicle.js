@@ -412,7 +412,7 @@ Chronicle.Prototype = function() {
   //
 
   this.find = function(name) {
-    this.index.getRef(name);
+    return this.index.getRef(name);
   };
 
   // Get the current version.
@@ -589,9 +589,21 @@ Index.prototype = new Index.Prototype();
 Index.INVALID = "INVALID";
 Index.ROOT = ROOT_NODE;
 
-
 Index.create = function() {
   throw new errors.SubstanceError("Not implemented.");
+};
+
+// Creates an adapter for Changes given as plain hash.
+// The adapter can be used together with Index.import
+Index.adapt = function(changes) {
+  return {
+    list: function() {
+      return _.keys(changes);
+    },
+    get: function(id) {
+      return changes[id];
+    }
+  };
 };
 
 // A interface that must be implemented by objects that should be versioned.
