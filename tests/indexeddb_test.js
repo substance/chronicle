@@ -61,16 +61,16 @@ IndexedDbBackendTest.Prototype = function() {
     return document;
   };
 
-  this.applyChanges = function(document) {
-    this.ID1 = document.apply(OP1);
-    this.ID2 = document.apply(OP2);
-    this.ID3 = document.apply(OP3);
-    this.ID4 = document.apply(OP4);
-    document.chronicle.open(this.ID1);
-    this.ID5_1 = document.apply(OP5_1);
-    document.chronicle.open(this.ID1);
-    this.ID5_2 = document.apply(OP5_2);
-    document.chronicle.open("ROOT");
+  this.applyChanges = function(doc) {
+    this.ID1 = doc.apply(OP1);
+    this.ID2 = doc.apply(OP2);
+    this.ID3 = doc.apply(OP3);
+    this.ID4 = doc.apply(OP4);
+    doc.chronicle.open(this.ID1);
+    this.ID5_1 = doc.apply(OP5_1);
+    doc.chronicle.open(this.ID1);
+    this.ID5_2 = doc.apply(OP5_2);
+    doc.chronicle.open("ROOT");
   };
 
   this.actions = [
