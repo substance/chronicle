@@ -4,7 +4,6 @@
 // Import
 // ========
 
-var _ = require('underscore');
 var util = require('substance-util');
 var errors = util.errors;
 var Test = require('substance-test');

@@ -1,7 +1,6 @@
 "use strict";
 
 var util = require("substance-util");
-var _ = require("underscore");
 var Chronicle = require("../chronicle");
 var Index = Chronicle.Index;
 

@@ -3,7 +3,6 @@
 // Imports
 // ====
 
-var _ = require('underscore');
 var util = require('substance-util');
 var errors = util.errors;
 var Chronicle = require('./chronicle');

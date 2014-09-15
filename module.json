@@ -10,12 +10,12 @@
     "url": "https://github.com/substance/chronicle.git"
   },
   "dependencies": {
-    "underscore": "",
     "substance-util": "",
     "substance-operator": ""
   },
   "devDependencies": {
     "mocha": "",
+    "underscore": "",
     "substance-test": ""
   },
   "scripts": {

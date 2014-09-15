@@ -1,4 +1,5 @@
-var _ = require("underscore");
+"use strict";
+
 var util = require("substance-util");
 var errors = util.errors;
 var IndexImpl = require("./index_impl");

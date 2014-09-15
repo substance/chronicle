@@ -1,4 +1,5 @@
 var Test = require("substance-test");
+global._ = require('underscore');
 
 require("./index");
 
