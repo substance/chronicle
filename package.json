@@ -15,13 +15,13 @@
     "url": "https://github.com/substance/chronicle.git"
   },
   "dependencies": {
-    "substance-util": "git+https://github.com/substance/util.git#master",
-    "substance-operator": "git+https://github.com/substance/operator.git#master"
+    "substance-util": "git+https://github.com/substance/util.git#substance-ve",
+    "substance-operator": "git+https://github.com/substance/operator.git#substance-ve"
   },
   "devDependencies": {
     "mocha": "1.12.x",
     "underscore": "1.5.x",
-    "substance-test": "git+https://github.com/substance/test.git#master"
+    "substance-test": "git+https://github.com/substance/test.git#substance-ve"
   },
   "scripts": {
     "test": "mocha -R spec tests/run.js"
