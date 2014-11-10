@@ -32,7 +32,7 @@ var ROOT = Chronicle.Index.ROOT.id;
 
 var Merge = function() {
   ChronicleTest.call(this);
-}
+};
 
 Merge.Prototype = function() {
 

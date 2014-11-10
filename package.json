@@ -15,12 +15,12 @@
     "url": "https://github.com/substance/chronicle.git"
   },
   "dependencies": {
+    "underscore": "1.5.x",
     "substance-util": "git+https://github.com/substance/util.git#substance-ve",
     "substance-operator": "git+https://github.com/substance/operator.git#substance-ve"
   },
   "devDependencies": {
     "mocha": "1.12.x",
-    "underscore": "1.5.x",
     "substance-test": "git+https://github.com/substance/test.git#substance-ve"
   },
   "scripts": {

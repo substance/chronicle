@@ -14,6 +14,4 @@ Chronicle.Diff.create = Chronicle.DiffImpl.create;
 Chronicle.ArrayOperationAdapter = require('./src/array_adapter');
 Chronicle.TextOperationAdapter = require('./src/text_adapter');
 
-Chronicle.IndexedDBBackend = require("./src/backends/indexeddb_backend");
-
 module.exports = Chronicle;

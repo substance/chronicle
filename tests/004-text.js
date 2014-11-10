@@ -7,7 +7,6 @@ var util = require('substance-util');
 var errors = util.errors;
 var Test = require('substance-test');
 var assert = Test.assert;
-var registerTest = Test.registerTest;
 var Chronicle = require('../index');
 var TextOperation = require('substance-operator').TextOperation;
 
@@ -47,7 +46,7 @@ var TestDocument;
 
 var ChronicledTextTest = function() {
   Test.call(this);
-}
+};
 
 ChronicledTextTest.Prototype = function() {
   var ID_IDX = 1;

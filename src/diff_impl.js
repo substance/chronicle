@@ -1,3 +1,7 @@
+"use strict";
+
+var _ = require('underscore');
+
 var Chronicle = require("./chronicle");
 
 var DiffImpl = function(data) {

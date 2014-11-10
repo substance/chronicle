@@ -4,6 +4,7 @@
 // Import
 // ========
 
+var _ = require('underscore');
 var util = require('substance-util');
 var errors = util.errors;
 var Test = require('substance-test');
@@ -35,7 +36,7 @@ var PLUS = function(id, parents) {
 
 var Basics = function() {
   ChronicleTest.call(this);
-}
+};
 
 Basics.Prototype = function() {
 

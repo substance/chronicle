@@ -3,6 +3,7 @@
 // Import
 // =========
 
+var _ = require('underscore');
 var Chronicle = require('../index');
 var Calculator = require('./example');
 var Test = require("substance-test");
