@@ -439,6 +439,18 @@ Chronicle.Prototype = function() {
     return changes;
   };
 
+  this.canRedo = function() {
+    var state = this.versioned.getState();
+    var children = this.index.children[state];
+    return children.length > 0;
+  };
+
+  this.canUndo = function() {
+    var root = this.index.get(ROOT);
+    var current = this.index.get(this.versioned.getState());
+    return (current !== root);
+  };
+
 };
 
 Chronicle.prototype = new Chronicle.Prototype();
