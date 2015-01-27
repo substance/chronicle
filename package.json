@@ -15,7 +15,7 @@
     "url": "https://github.com/substance/chronicle.git"
   },
   "dependencies": {
-    "underscore": "1.5.x",
+    "underscore": "*",
     "substance-util": "git+https://github.com/substance/util.git#master",
     "substance-operator": "git+https://github.com/substance/operator.git#master"
   },
