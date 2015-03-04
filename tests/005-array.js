@@ -8,7 +8,7 @@ var assert = Test.assert;
 var Chronicle = require('../index');
 var Operator = require('substance-operator');
 var ArrayOperation = Operator.ArrayOperation;
-
+var ArrayOperationAdapter = require('./array_adapter');
 
 // Test
 // =======
@@ -71,7 +71,7 @@ ChronicledArrayTest.Prototype = function() {
     this.chronicle.uuid = this.uuid;
 
     this.array = [];
-    this.adapter = new Chronicle.ArrayOperationAdapter(this.chronicle, this.array);
+    this.adapter = new ArrayOperationAdapter(this.chronicle, this.array);
 
     this.fixture();
   };

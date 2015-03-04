@@ -7,10 +7,9 @@ var util = require('substance-util');
 var errors = util.errors;
 var Test = require('substance-test');
 var assert = Test.assert;
-var registerTest = Test.registerTest;
 var Chronicle = require('../index');
 var TextOperation = require('substance-operator').TextOperation;
-
+var TextOperationAdapter = require('./text_adapter');
 
 // Test
 // ========
@@ -47,7 +46,7 @@ var TestDocument;
 
 var ChronicledTextTest = function() {
   Test.call(this);
-}
+};
 
 ChronicledTextTest.Prototype = function() {
   var ID_IDX = 1;
@@ -118,7 +117,7 @@ ChronicledTextTest.prototype = new ChronicledTextTest.Prototype();
 TestDocument = function(chronicle) {
   this.text = "";
   this.chronicle = chronicle;
-  chronicle.manage(new Chronicle.TextOperationAdapter(chronicle, this));
+  chronicle.manage(new TextOperationAdapter(chronicle, this));
 
   this.setText = function(text) {
     this.text = text;
@@ -132,7 +131,6 @@ TestDocument = function(chronicle) {
     this.text = op.apply(this.text);
     return this.chronicle.record(op);
   };
-
 };
 
 Test.registerTest(['Substance.Chronicle', 'Text Operation'], new ChronicledTextTest());

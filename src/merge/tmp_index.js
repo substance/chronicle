@@ -1,31 +1,31 @@
-var _ = require("underscore");
-var util = require("substance-util");
-var errors = util.errors;
-var IndexImpl = require("./index_impl");
+'use strict';
+
+var without = require('lodash/array/without');
+var Substance = require('substance');
+var ChronicleIndex = require('../chronicle_index');
+var ChronicleError = require('../chronicle_error');
 
 
 var TmpIndex = function(index) {
-  IndexImpl.call(this);
+  ChronicleIndex.call(this);
   this.index = index;
 };
 
 TmpIndex.Prototype = function() {
 
-  var __super__ = util.prototype(this);
-
   this.get = function(id) {
-    if (__super__.contains.call(this, id)) {
-      return __super__.get.call(this, id);
+    if (this._super.contains.call(this, id)) {
+      return this._super.get.call(this, id);
     }
     return this.index.get(id);
   };
 
   this.contains = function(id) {
-    return __super__.contains.call(this, id) || this.index.contains(id);
+    return this._super.contains.call(this, id) || this.index.contains(id);
   };
 
   this.getChildren = function(id) {
-    var result = __super__.getChildren.call(this, id) || [];
+    var result = this._super.getChildren.call(this, id) || [];
     if (this.index.contains(id)) {
       result = result.concat(this.index.getChildren(id));
     }
@@ -33,7 +33,7 @@ TmpIndex.Prototype = function() {
   };
 
   this.list = function() {
-    return __super__.list.call(this).concat(this.index.list());
+    return this._super.list.call(this).concat(this.index.list());
   };
 
   this.save = function(id, recurse) {
@@ -57,16 +57,16 @@ TmpIndex.Prototype = function() {
 
   this.reconnect = function(id, newParentId) {
     if (!this.changes[id])
-      throw new errors.ChronicleError("Change does not exist to this index.");
+      throw new ChronicleError("Change does not exist to this index.");
 
     var change = this.get(id);
 
     if (!this.contains(newParentId)) {
-      throw new errors.ChronicleError("Illegal change: parent is unknown parent=" + newParentId);
+      throw new ChronicleError("Illegal change: parent is unknown parent=" + newParentId);
     }
 
     if (!this.children[change.parent]) this.children[change.parent] = [];
-    this.children[change.parent] = _.without(this.children[change.parent], change.id);
+    this.children[change.parent] = without(this.children[change.parent], change.id);
 
     change.parent = newParentId;
 
@@ -74,7 +74,6 @@ TmpIndex.Prototype = function() {
     this.children[change.parent].push(id);
   };
 };
-TmpIndex.Prototype.prototype = IndexImpl.prototype;
-TmpIndex.prototype = new TmpIndex.Prototype();
+Substance.inherit(TmpIndex, ChronicleIndex);
 
 module.exports = TmpIndex;

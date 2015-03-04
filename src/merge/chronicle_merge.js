@@ -1,123 +1,39 @@
-"use strict";
 
-// Imports
-// ====
+var Substance = require('substance');
+var ChronicleError = require('./chronicle_error');
 
-var _ = require('underscore');
-var util = require('substance-util');
-var errors = util.errors;
-var Chronicle = require('./chronicle');
+var intersection = require('lodash/array/intersection');
+var difference = require('lodash/array/difference');
+var object = require('lodash/array/object');
 
-// Module
-// ====
+var Change = require('../change');
+var Merge = require('./merge');
+var Transformed = require('./transformed');
+var Diff = require('./diff');
+var TmpIndex = require('./tmp_index');
 
-var ChronicleImpl = function(index, options) {
-  Chronicle.call(this, index, options);
-};
+function ChronicleMerge() {}
 
-ChronicleImpl.Prototype = function() {
+ChronicleMerge.Prototype = function() {
 
-  var __private__ = new ChronicleImpl.__private__();
-  var ROOT = Chronicle.Index.ROOT.id;
+  var __private__ = this;
 
-  this.uuid = util.uuid;
-  this.internal_uuid = util.uuid;
-
-  this.record = function(changeData) {
-    // Sanity check: the change should have been applied already.
-    // Reverting and applying should not fail.
-    if ((this.__mode__ & Chronicle.PEDANTIC_RECORD) > 0) {
-      this.versioned.revert(changeData);
-      this.versioned.apply(changeData);
-    }
-
-    // 1. create a new change instance
-    var head = this.versioned.getState();
-    var id = this.uuid();
-    var change = new Chronicle.Change(id, head, changeData);
-
-    // 2. add change to index
-    this.index.add(change);
-
-    // 3. shift head
-    this.versioned.setState(id);
-
-    return id;
-  };
-
-  this.reset = function(id, index) {
-    index = index || this.index;
-
-    // the given id must be available
-    if (!index.contains(id)) {
-      throw new errors.ChronicleError("Invalid argument: unknown change "+id);
-    }
-
-    // 1. compute diff between current state and the given id
-    var head = this.versioned.getState();
-    var path = index.shortestPath(head, id);
-
-    // 2. apply path
-    __private__.applySequence.call(this, path, index);
-  };
-
-  this.open = this.reset;
-
-  this.path = function(id1, id2) {
-    if (!id2) {
-      var path = this.index.shortestPath(ROOT, id1 || this.versioned.getState());
-      path.shift();
-      return path;
-    } else {
-      if (!id1) throw new errors.ChronicleError("Illegal argument: "+id1);
-      return this.index.shortestPath(id1, id2);
-    }
-  };
-
-  this.apply = function(sha) {
-    if (_.isArray(sha)) {
-      return __private__.applySequence.call(this, sha);
-    } else {
-      return __private__.applySequence.call(this, arguments);
-    }
-  };
-
-  this.step = function(nextId) {
-    var index = this.index;
-    var originalState = this.versioned.getState();
-
-    try {
-      var current = index.get(originalState);
-
-      // tolerate nop-transitions
-      if (current.id === nextId) return null;
-
-      var next = index.get(nextId);
-
-      var op;
-      if (current.parent === nextId) {
-        op = this.versioned.invert(current.data);
-      } else if (next.parent === current.id) {
-        op = next.data;
-      }
-      else {
-        throw new errors.ChronicleError("Invalid apply sequence: "+nextId+" is not parent or child of "+current.id);
-      }
-
-      this.versioned.apply(op);
-      this.versioned.setState(nextId);
-      return op;
-
-    } catch(err) {
-      this.reset(originalState, index);
-      throw err;
-    }
-  };
+  // Create a commit that merges a history specified by its last commit.
+  // --------
+  //
+  // The strategy specifies how the merge should be generated.
+  //
+  //  'mine':   reject the changes of the other branch
+  //  'theirs': reject the changes of this branch
+  //  'manual': compute a merge that leads to the given sequence.
+  //
+  // Returns the id of the new state.
+  //
 
   this.merge = function(id, strategy, options) {
     // the given id must exist
     if (!this.index.contains(id))
-      throw new errors.ChronicleError("Invalid argument: unknown change "+id);
+      throw new ChronicleError("Invalid argument: unknown change "+id);
 
     if(arguments.length == 1) {
       strategy = "auto";
@@ -149,17 +65,17 @@ ChronicleImpl.Prototype = function() {
 
     // Mine
     if (strategy === "mine") {
-      change = new Chronicle.Merge(this.uuid(), head, [head, id]);
+      change = new Merge(this.uuid(), head, [head, id]);
     }
 
     // Theirs
     else if (strategy === "theirs") {
-      change = new Chronicle.Merge(this.uuid(), id, [head, id]);
+      change = new Merge(this.uuid(), id, [head, id]);
     }
 
     // Manual
     else if (strategy === "manual") {
-      if (!options.sequence) throw new errors.ChronicleError("Invalid argument: sequence is missing for manual merge");
+      if (!options.sequence) throw new ChronicleError("Invalid argument: sequence is missing for manual merge");
       var sequence = options.sequence;
 
       change = __private__.manualMerge.call(this, head, id, diff, sequence, options);
@@ -167,7 +83,7 @@ ChronicleImpl.Prototype = function() {
 
     // Unsupported
     else {
-      throw new errors.ChronicleError("Unsupported merge strategy: "+strategy);
+      throw new ChronicleError("Unsupported merge strategy: "+strategy);
     }
 
     // 2. add the change to the index
@@ -179,18 +95,6 @@ ChronicleImpl.Prototype = function() {
     return change.id;
   };
 
-
-  this.import = function(otherIndex) {
-    var newIds = this.index.import(otherIndex);
-    // sanity check: see if all imported changes can be applied
-    if ((this.__mode__ & Chronicle.PEDANTIC_IMPORT) > 0) __private__.importSanityCheck.call(this, newIds);
-  };
-
-};
-
-ChronicleImpl.__private__ = function() {
-
-  var __private__ = this;
 
   // Traversal operations
   // =======
@@ -207,7 +111,7 @@ ChronicleImpl.__private__ = function() {
 
     // sanity check: don't allow to apply the diff on another change
     if (originalState !== diff.start())
-      throw new errors.ChronicleError("Diff can not applied on to this state. Expected: "+diff.start()+", Actual: "+originalState);
+      throw new ChronicleError("Diff can not applied on to this state. Expected: "+diff.start()+", Actual: "+originalState);
 
     var err = null;
     var successfulReverts = [];
@@ -235,7 +139,7 @@ ChronicleImpl.__private__ = function() {
     // if the diff could not be applied, revert all changes that have been applied so far
     if (err && (successfulReverts.length > 0 || successfulApplies.length > 0)) {
       // idx shows to the change that has failed;
-      var applied = Chronicle.Diff.create(diff.start(), successfulReverts, successfulApplies);
+      var applied = Diff.create(diff.start(), successfulReverts, successfulApplies);
       var inverted = applied.inverted();
       try {
         __private__.applyDiff.call(this, inverted, index);
@@ -247,76 +151,7 @@ ChronicleImpl.__private__ = function() {
         this.versioned.reset();
         this.reset(originalState, index);
       }
-    }
-
-    if (err) throw err;
-  };
-
-  this.applySequence = function(seq, index) {
-    index = index || this.index;
-
-    var originalState = this.versioned.getState();
-
-    try {
-      var current = index.get(originalState);
-      _.each(seq, function(id) {
-
-        // tolerate nop-transitions
-        if (current.id === id) return;
-
-        var next = index.get(id);
-
-        // revert
-        if (current.parent === id) {
-          __private__.revertTo.call(this, id, index);
-        }
-        // apply
-        else if (next.parent === current.id) {
-          __private__.apply.call(this, id, index);
-        }
-        else {
-          throw new errors.ChronicleError("Invalid apply sequence: "+id+" is not parent or child of "+current.id);
-        }
-        current = next;
-
-      }, this);
-    } catch(err) {
-      this.reset(originalState, index);
-      throw err;
-    }
-  };
-
-  // Performs a single revert step
-  // --------
-
-  this.revertTo = function(id, index) {
-    index = index || this.index;
-
-    var head = this.versioned.getState();
-    var current = index.get(head);
-
-    // sanity checks
-    if (!current) throw new errors.ChangeError("Illegal state. 'head' is unknown: "+ head);
-    if (current.parent !== id) throw new errors.ChangeError("Can not revert: change is not parent of current");
-
-    // Note: Merge nodes do not have data
-    if (current.data) this.versioned.revert(current.data);
-    this.versioned.setState(id);
-  };
-
-  // Performs a single forward step
-  // --------
-
-  this.apply = function(id, index) {
-    index = index || this.index;
-
-    var change = index.get(id);
-
-    // sanity check
-    if (!change) throw new errors.ChangeError("Illegal argument. change is unknown: "+ id);
-
-    if (change.data) this.versioned.apply(change.data);
-    this.versioned.setState(id);
+    }    if (err) throw err;
   };
 
   // Restructuring operations
@@ -341,8 +176,8 @@ ChronicleImpl.__private__ = function() {
   //
 
   this.eliminate = function(start, del, mapping, index, selection) {
-    if (!(index instanceof Chronicle.TmpIndex)) {
-      throw new errors.ChronicleError("'eliminate' must be called on a TmpIndex instance");
+    if (!(index instanceof TmpIndex)) {
+      throw new ChronicleError("'eliminate' must be called on a TmpIndex instance");
     }
 
     var left = index.get(del);
@@ -350,7 +185,7 @@ ChronicleImpl.__private__ = function() {
     var inverted, rebased;
 
     // attach the inversion of the first to the first node
-    inverted = new Chronicle.Change(this.internal_uuid(), del, this.versioned.invert(left.data));
+    inverted = new Change(this.internal_uuid(), del, this.versioned.invert(left.data));
     index.add(inverted);
 
     // rebase onto the inverted change
@@ -394,7 +229,7 @@ ChronicleImpl.__private__ = function() {
     var source = index.get(sourceId);
 
     if (target.parent !== source.parent) {
-      throw new errors.ChronicleError("Illegal arguments: principal rebase can only be applied on siblings.");
+      throw new ChronicleError("Illegal arguments: principal rebase can only be applied on siblings.");
     }
 
     // recursively transform the sub-graph
@@ -419,13 +254,13 @@ ChronicleImpl.__private__ = function() {
 
       var transformed;
 
-      if (source instanceof Chronicle.Merge) {
+      if (source instanceof Merge) {
         // no transformation necessary here
         // propagating the current transformation
         transformed = [a];
         // inserting the original branch ids here, which will be resolved to the transformed ids
         // afterwards, when we can be sure, that all other node have been transformed.
-        b_i = new Chronicle.Merge(this.uuid(), targetId, source.branches);
+        b_i = new Merge(this.uuid(), targetId, source.branches);
         merges.push(b_i);
       } else {
         // perform the operational transformation
@@ -433,8 +268,8 @@ ChronicleImpl.__private__ = function() {
         transformed = this.versioned.transform(a, b, {check: check});
 
         // add a change the with the rebased/transformed operation
-        var orig = (source instanceof Chronicle.Transformed) ? source.original : source.id;
-        b_i = new Chronicle.Transformed(this.internal_uuid(), targetId, transformed[1], orig);
+        var orig = (source instanceof Transformed) ? source.original : source.id;
+        b_i = new Transformed(this.internal_uuid(), targetId, transformed[1], orig);
 
         // overwrite the mapping for the original
         mapping[orig] = b_i.id;
@@ -453,7 +288,7 @@ ChronicleImpl.__private__ = function() {
 
         // only rebase selected children if a selection is given
         if (selection) {
-          var c = (child instanceof Chronicle.Transformed) ? child.original : child.id;
+          var c = (child instanceof Transformed) ? child.original : child.id;
           if (!selection[c]) continue;
         }
 
@@ -470,7 +305,6 @@ ChronicleImpl.__private__ = function() {
       }
       m.branches = mapped_branches;
     }
-
     return result.id;
   };
 
@@ -481,12 +315,12 @@ ChronicleImpl.__private__ = function() {
   // --------
   // this is part of the merge
   this.eliminateToSelection = function(branch, sequence, mapping, index) {
-    var tmp_index = new Chronicle.TmpIndex(index);
+    var tmp_index = new TmpIndex(index);
 
-    var selection = _.intersection(branch, sequence);
+    var selection = intersection(branch, sequence);
     if (selection.length === 0) return null;
 
-    var eliminations = _.difference(branch, sequence).reverse();
+    var eliminations = difference(branch, sequence).reverse();
     if (eliminations.length === 0) return mapping[selection[0]];
 
     var idx1 = 0, idx2 = 0;
@@ -522,13 +356,13 @@ ChronicleImpl.__private__ = function() {
   this.manualMerge = function(head, id, diff, sequence, options) {
 
       if (sequence.length === 0) {
-        throw new errors.ChronicleError("Nothing selected for merge.");
+        throw new ChronicleError("Nothing selected for merge.");
       }
 
       // accept only those selected which are actually part of the two branches
-      var tmp = _.intersection(sequence, diff.sequence());
+      var tmp = intersection(sequence, diff.sequence());
       if (tmp.length !== sequence.length) {
-        throw new errors.ChronicleError("Illegal merge selection: contains changes that are not contained in the merged branches.");
+        throw new ChronicleError("Illegal merge selection: contains changes that are not contained in the merged branches.");
       }
 
       // The given sequence is constructed introducing new (hidden) changes.
@@ -537,7 +371,7 @@ ChronicleImpl.__private__ = function() {
       // 2. TODO Re-order the eliminated versions
       // 3. Zip-merge the temporary branches into the selected one
 
-      var tmp_index = new Chronicle.TmpIndex(this.index);
+      var tmp_index = new TmpIndex(this.index);
 
       // Preparation / Elimination
       // ........
@@ -545,9 +379,9 @@ ChronicleImpl.__private__ = function() {
       var mine = diff.mine();
       var theirs = diff.theirs();
 
-      var mapping = _.object(sequence, sequence);
-      __private__.eliminateToSelection.call(this, mine, sequence, mapping, tmp_index);
-      __private__.eliminateToSelection.call(this, theirs, sequence, mapping, tmp_index);
+      var mapping = object(sequence, sequence);
+      this.__eliminateToSelection(mine, sequence, mapping, tmp_index);
+      this.__eliminateToSelection(theirs, sequence, mapping, tmp_index);
 
       // 2. Re-order?
       // TODO: implement this if desired
@@ -555,8 +389,8 @@ ChronicleImpl.__private__ = function() {
       // Merge
       // ........
 
-      mine = _.intersection(mine, sequence);
-      theirs = _.intersection(theirs, sequence);
+      mine = intersection(mine, sequence);
+      theirs = intersection(theirs, sequence);
 
       for (var idx = 0; idx < sequence.length; idx++) {
         var nextId = sequence[idx];
@@ -575,11 +409,11 @@ ChronicleImpl.__private__ = function() {
           a = mapping[nextId];
           b = mapping[mine[0]];
         } else {
-          throw new errors.ChronicleError("Reordering of commmits is not supported.");
+          throw new ChronicleError("Reordering of commmits is not supported.");
         }
         __private__.rebase0.call(this, a, b, mapping, tmp_index, null, !options.force);
       }
-      var lastId = mapping[_.last(sequence)];
+      var lastId = mapping[Substance.last(sequence)];
 
       // Sanity check
       // ........
@@ -597,48 +431,10 @@ ChronicleImpl.__private__ = function() {
         tmp_index.save(mapping[sequence[idx]]);
       }
 
-      return new Chronicle.Merge(this.uuid(), lastId, [head, id]);
+      return new Merge(this.uuid(), lastId, [head, id]);
   };
-
-  this.importSanityCheck = function(newIds) {
-    var head = this.versioned.getState();
-
-    // This is definitely very hysterical: we try to reach
-    // every provided change by resetting to it.
-    // If this is possible we are sure that every change has been applied
-    // and reverted at least once.
-    // This is for sure not a minimalistic approach.
-    var err = null;
-    var idx;
-    try {
-      for (idx = 0; idx < newIds.length; idx++) {
-        this.reset(newIds[idx]);
-      }
-    } catch (_err) {
-      err = _err;
-      console.log(err.stack);
-    }
-    // rollback to original state
-    this.reset(head);
-
-    if (err) {
-      // remove the changes in reverse order to meet restrictions
-      newIds.reverse();
-      for (idx = 0; idx < newIds.length; idx++) {
-        this.index.remove(newIds[idx]);
-      }
-      if (err) throw new errors.ChronicleError("Import did not pass sanity check: "+err.toString());
-    }
-  };
-
-};
-ChronicleImpl.Prototype.prototype = Chronicle.prototype;
-ChronicleImpl.prototype = new ChronicleImpl.Prototype();
-
-ChronicleImpl.create = function(options) {
-  options = options || {};
-  var index = Chronicle.Index.create(options);
-  return new ChronicleImpl(index, options);
 };
 
-module.exports = ChronicleImpl;
+Substance.initClass(ChronicleMerge);
+
+module.exports = ChronicleMerge;
